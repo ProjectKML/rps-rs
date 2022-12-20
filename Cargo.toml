@@ -1,0 +1,29 @@
+[package]
+name = "render-pipeline-shaders"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ash = "0.37.1+1.3.235"
+bitflags = "2.0.0-rc.1"
+libc = "0.2.138"
+static_assertions = "1.1.0"
+
+[build-dependencies]
+cc = "1.0.78"
+
+[build-dependencies.bindgen]
+version = "0.63.0"
+optional = true
+
+[features]
+default = ["vulkan"]
+generate_bindings = ["bindgen"]
+d3d11 = []
+d3d12 = []
+vulkan = []
+
+[profile.release]
+lto = true
+opt-level = 3
+codegen-units = 1

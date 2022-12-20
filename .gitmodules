@@ -1,0 +1,6 @@
+[submodule "vendor/RenderPipelineShaders"]
+	path = vendor/RenderPipelineShaders
+	url = https://github.com/ProjectKML/RenderPipelineShaders
+[submodule "vendor/Vulkan-Headers"]
+	path = vendor/Vulkan-Headers
+	url = https://github.com/KhronosGroup/Vulkan-Headers/
