@@ -26,8 +26,8 @@ pub const INDEX_NONE_U32: u32 = u32::MAX;
 pub const INDEX_NONE_I32: i32 = -1;
 pub const NAME_MAX_LEN: usize = 256;
 
-pub type PfnAlloc = Option<unsafe extern "C" fn(*mut c_void, usize, usize)>;
-pub type PfnRealloc = Option<unsafe extern "C" fn(*mut c_void, *mut c_void, usize, usize, usize)>;
+pub type PfnAlloc = Option<unsafe extern "C" fn(*mut c_void, usize, usize) -> *mut c_void>;
+pub type PfnRealloc = Option<unsafe extern "C" fn(*mut c_void, *mut c_void, usize, usize, usize) -> *mut c_void>;
 pub type PfnFree = Option<unsafe extern "C" fn(*mut c_void, *mut c_void)>;
 
 #[repr(C)]
