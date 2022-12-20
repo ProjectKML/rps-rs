@@ -6,8 +6,11 @@ use std::{
 
 use bitflags::bitflags;
 
-use crate::{ffi, result_from_ffi, RpsResult};
-use crate::utils::{assert_size_and_align, define_handle};
+use crate::{
+    ffi, result_from_ffi,
+    utils::{assert_size_and_align, define_handle},
+    RpsResult
+};
 
 pub type Bool = i32;
 
@@ -36,10 +39,17 @@ pub struct Allocator {
     pub context: *mut c_void
 }
 
+impl Default for Allocator {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(Allocator, ffi::RpsAllocator);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct AllocInfo {
     pub size: usize,
     pub alignment: usize
@@ -58,6 +68,13 @@ pub struct Printer {
     pub context: *mut c_void
 }
 
+impl Default for Printer {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(Printer, ffi::RpsPrinter);
 
 pub type PfnRandomUniformInt = Option<unsafe extern "C" fn(*mut c_void, i32, i32)>;
@@ -69,6 +86,13 @@ pub struct RandomNumberGenerator {
     pub context: *mut c_void
 }
 
+impl Default for RandomNumberGenerator {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(RandomNumberGenerator, ffi::RpsRandomNumberGenerator);
 
 define_handle!(Device);
@@ -76,7 +100,7 @@ define_handle!(Device);
 pub type PfnDeviceOnDestroy = Option<unsafe extern "C" fn(Device)>;
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct DeviceCreateInfo {
     pub allocator: Allocator,
     pub printer: Printer,
@@ -148,8 +172,9 @@ impl TypeInfo {
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum BuiltInTypeIds {
+    #[default]
     Bool = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_BOOL as _,
     Int8 = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT8 as _,
     UInt8 = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT8 as _,
@@ -180,7 +205,7 @@ pub type Constant = *const c_void;
 
 bitflags! {
     #[repr(transparent)]
-    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+    #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct SubgraphFlags: u32 {
         const NONE = ffi::RpsSubgraphFlagBits_RPS_SUBGRAPH_FLAG_NONE as _;
         const ATOMIC = ffi::RpsSubgraphFlagBits_RPS_SUBGRAPH_FLAG_ATOMIC as _;
@@ -191,7 +216,7 @@ bitflags! {
 pub type SourceFileId = Flags32;
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct SourceLocation {
     pub file: SourceFileId,
     pub line: u32

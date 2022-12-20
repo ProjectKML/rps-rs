@@ -1,14 +1,16 @@
-use std::ffi::{c_char, c_void};
+use std::{
+    ffi::{c_char, c_void},
+    mem
+};
 
 use bitflags::bitflags;
 
 use crate::{
     core::Result,
-    utils::define_handle,
-    ffi, AccessAttr, Bool, ClearValue, Format, GpuMemoryRequirement, HeapPlacement, RenderGraph, RenderGraphPhaseInfo, ResourceDesc, ResourceId, ResourceType, RuntimeCommandBuffer,
-    Variable
+    ffi,
+    utils::{assert_size_and_align, define_handle},
+    AccessAttr, Bool, ClearValue, Format, GpuMemoryRequirement, HeapPlacement, RenderGraph, RenderGraphPhaseInfo, ResourceDesc, ResourceId, ResourceType, RuntimeCommandBuffer, Variable
 };
-use crate::utils::assert_size_and_align;
 
 define_handle!(RuntimeHeap);
 define_handle!(RuntimeResource);
@@ -23,6 +25,13 @@ pub struct RuntimeOpCreateHeapArgs {
     pub runtime_heap: *mut RuntimeHeap
 }
 
+impl Default for RuntimeOpCreateHeapArgs {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(RuntimeOpCreateHeapArgs, ffi::RpsRuntimeOpCreateHeapArgs);
 
 #[repr(C)]
@@ -30,6 +39,13 @@ assert_size_and_align!(RuntimeOpCreateHeapArgs, ffi::RpsRuntimeOpCreateHeapArgs)
 pub struct RuntimeOpDestroyHeapArgs {
     pub num_heaps: u32,
     pub heaps: *const RuntimeHeap
+}
+
+impl Default for RuntimeOpDestroyHeapArgs {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 assert_size_and_align!(RuntimeOpDestroyHeapArgs, ffi::RpsRuntimeOpDestroyHeapArgs);
@@ -52,6 +68,13 @@ pub struct RuntimeOpCreateResourceArgs {
     pub runtime_resource: *mut RuntimeResource
 }
 
+impl Default for RuntimeOpCreateResourceArgs {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(RuntimeOpCreateResourceArgs, ffi::RpsRuntimeOpCreateResourceArgs);
 
 #[repr(C)]
@@ -60,6 +83,13 @@ pub struct RuntimeOpDestroyResourceArgs {
     pub resource_type: ResourceType,
     pub num_resources: u32,
     pub runtime_resources: *const RuntimeResource
+}
+
+impl Default for RuntimeOpDestroyResourceArgs {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 assert_size_and_align!(RuntimeOpDestroyResourceArgs, ffi::RpsRuntimeOpDestroyResourceArgs);
@@ -73,11 +103,19 @@ pub struct RuntimeOpCreateNodeUserResourcesArgs {
     pub node_tag: u32
 }
 
+impl Default for RuntimeOpCreateNodeUserResourcesArgs {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(RuntimeOpCreateNodeUserResourcesArgs, ffi::RpsRuntimeOpCreateNodeUserResourcesArgs);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum RuntimeDebugMarkerMode {
+    #[default]
     Begin = ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_BEGIN as _,
     Label = ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_LABEL as _,
     End = ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_END as _
@@ -85,7 +123,7 @@ pub enum RuntimeDebugMarkerMode {
 
 bitflags! {
     #[repr(C)]
-    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+    #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct RuntimeRenderPassFlags: u32 {
         const NONE = ffi::RpsRuntimeRenderPassFlagBits_RPS_RUNTIME_RENDER_PASS_FLAG_NONE as _;
         const SUSPENDING = ffi::RpsRuntimeRenderPassFlagBits_RPS_RUNTIME_RENDER_PASS_SUSPENDING as _;
@@ -104,6 +142,13 @@ pub struct RuntimeOpRecordDebugMarkerArgs {
     pub text: *const c_char
 }
 
+impl Default for RuntimeOpRecordDebugMarkerArgs {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(RuntimeOpRecordDebugMarkerArgs, ffi::RpsRuntimeOpRecordDebugMarkerArgs);
 
 #[repr(C)]
@@ -112,6 +157,13 @@ pub struct RuntimeOpSetDebugNameArgs {
     pub resource: RuntimeResource,
     pub resource_type: ResourceType,
     pub name: *const c_char
+}
+
+impl Default for RuntimeOpSetDebugNameArgs {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 assert_size_and_align!(RuntimeOpSetDebugNameArgs, ffi::RpsRuntimeOpSetDebugNameArgs);
@@ -137,7 +189,7 @@ pub type PfnRuntimeOpRecordDebugMarker = Option<unsafe extern "C" fn(*const c_vo
 pub type PfnRuntimeOpSetDebugName = Option<unsafe extern "C" fn(*const c_void, *const RuntimeOpSetDebugNameArgs)>;
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct RuntimeCallbacks {
     pub pfn_build_render_graph_phases: PfnRuntimeDeviceBuildRenderGraphPhases,
     pub pfn_destroy_runtime: PfnRuntimeDeviceDestroy,

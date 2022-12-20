@@ -47,8 +47,7 @@ macro_rules! assert_size_and_align {
     ($type_: ty, $ffi_type: ty) => {
         ::static_assertions::assert_eq_size!($type_, $ffi_type);
         ::static_assertions::assert_eq_align!($type_, $ffi_type);
-    }
+    };
 }
 
 pub(crate) use assert_size_and_align;
-

@@ -3,8 +3,10 @@ use std::{mem, mem::MaybeUninit};
 use ash::vk;
 use bitflags::bitflags;
 
-use crate::{ffi, result_from_ffi, CmdCallbackContext, Device, DeviceCreateInfo, Format, RpsResult, RuntimeCommandBuffer, RuntimeDeviceCreateInfo, RuntimeHeap, RuntimeResource};
-use crate::utils::assert_size_and_align;
+use crate::{
+    ffi, result_from_ffi, utils::assert_size_and_align, CmdCallbackContext, Device, DeviceCreateInfo, Format, RpsResult, RuntimeCommandBuffer, RuntimeDeviceCreateInfo, RuntimeHeap,
+    RuntimeResource
+};
 bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -23,6 +25,13 @@ pub struct VKRuntimeDeviceCreateInfo {
     pub vk_device: vk::Device,
     pub vk_physical_device: vk::PhysicalDevice,
     pub flags: VKRuntimeFlags
+}
+
+impl Default for VKRuntimeDeviceCreateInfo {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 assert_size_and_align!(VKRuntimeDeviceCreateInfo, ffi::RpsVKRuntimeDeviceCreateInfo);
@@ -82,13 +91,7 @@ pub unsafe fn vk_get_cmd_arg_image_view_array(
     image_views: *mut vk::ImageView,
     num_image_views: u32
 ) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsVKGetCmdArgImageViewArray(
-        context.cast(),
-        arg_index,
-        src_array_offset,
-        image_views,
-        num_image_views
-    ))
+    result_from_ffi(ffi::rpsVKGetCmdArgImageViewArray(context.cast(), arg_index, src_array_offset, image_views, num_image_views))
 }
 
 #[inline]
@@ -99,7 +102,7 @@ pub unsafe fn vk_get_cmd_arg_image_view(context: *const CmdCallbackContext, arg_
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct VkImageViewInfo {
     pub image_view: vk::ImageView,
     pub layout: vk::ImageLayout
@@ -167,7 +170,7 @@ pub unsafe fn vk_get_cmd_arg_buffer(context: *const CmdCallbackContext, arg_inde
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct VkDeviceMemoryRange {
     pub memory: vk::DeviceMemory,
     pub offset: usize,

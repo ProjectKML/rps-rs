@@ -1,8 +1,9 @@
-use crate::ffi;
-use crate::utils::assert_size_and_align;
+use std::mem;
+
+use crate::{ffi, utils::assert_size_and_align};
 
 #[repr(C)]
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Viewport {
     pub x: f32,
     pub y: f32,
@@ -15,7 +16,7 @@ pub struct Viewport {
 assert_size_and_align!(Viewport, ffi::RpsViewport);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Rect {
     pub x: i32,
     pub y: i32,
@@ -26,8 +27,9 @@ pub struct Rect {
 assert_size_and_align!(Rect, ffi::RpsRect);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum PrimitiveTopology {
+    #[default]
     Undefined = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_UNDEFINED as _,
     PointList = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_POINTLIST as _,
     LineList = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_LINELIST as _,
@@ -42,8 +44,9 @@ pub enum PrimitiveTopology {
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum ResolveMode {
+    #[default]
     Average = ffi::RpsResolveMode_RPS_RESOLVE_MODE_AVERAGE as _,
     Min = ffi::RpsResolveMode_RPS_RESOLVE_MODE_MIN as _,
     Max = ffi::RpsResolveMode_RPS_RESOLVE_MODE_MAX as _,
@@ -59,6 +62,13 @@ pub struct CmdViewportInfo {
     pub num_scissor_rects: u32,
     pub viewports: *const Viewport,
     pub scissor_rects: *const Rect
+}
+
+impl Default for CmdViewportInfo {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 assert_size_and_align!(CmdViewportInfo, ffi::RpsCmdViewportInfo);

@@ -8,11 +8,11 @@ use bitflags::bitflags;
 
 use crate::{
     core::{Result, RpsResult},
-    utils::define_handle,
-    ffi, result_from_ffi, AccessAttr, Bool, ClearValue, CmdRenderTargetInfo, CmdViewportInfo, Constant, Device, DeviceCreateInfo, Format, Index32, NodeDeclId, NodeId, ParamId,
-    RandomNumberGenerator, ResourceDesc, ResourceId, RpslEntry, RuntimeCallbacks, RuntimeRenderPassFlags, SemanticAttr, SubresourceRange, TypeInfo, Variable, INDEX_NONE_U32
+    ffi, result_from_ffi,
+    utils::{assert_size_and_align, define_handle},
+    AccessAttr, Bool, ClearValue, CmdRenderTargetInfo, CmdViewportInfo, Constant, Device, DeviceCreateInfo, Format, Index32, NodeDeclId, NodeId, ParamId, RandomNumberGenerator,
+    ResourceDesc, ResourceId, RpslEntry, RuntimeCallbacks, RuntimeRenderPassFlags, SemanticAttr, SubresourceRange, TypeInfo, Variable, INDEX_NONE_U32
 };
-use crate::utils::assert_size_and_align;
 
 define_handle!(RuntimeDevice);
 define_handle!(RenderGraph);
@@ -130,6 +130,13 @@ pub struct CmdCallback {
     pub flags: CmdCallbackFlags
 }
 
+impl Default for CmdCallback {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(CmdCallback, ffi::RpsCmdCallback);
 
 #[repr(C)]
@@ -140,6 +147,13 @@ pub struct ParameterDesc {
     pub attr: Constant,
     pub name: *const c_char,
     pub flags: ParameterFlags
+}
+
+impl Default for ParameterDesc {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 assert_size_and_align!(ParameterDesc, ffi::RpsParameterDesc);
@@ -153,6 +167,13 @@ pub struct NodeDesc {
     pub name: *const c_char
 }
 
+impl Default for NodeDesc {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(NodeDesc, ffi::RpsNodeDesc);
 
 #[repr(C)]
@@ -164,6 +185,13 @@ pub struct RenderGraphSignatureDesc {
     pub param_descs: *const ParameterDesc,
     pub node_descs: *const NodeDesc,
     pub name: *const c_char
+}
+
+impl Default for RenderGraphSignatureDesc {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 assert_size_and_align!(RenderGraphSignatureDesc, ffi::RpsRenderGraphSignatureDesc);
@@ -198,6 +226,13 @@ pub struct RenderGraphUpdateInfo {
     pub random_number_generator: *const RandomNumberGenerator
 }
 
+impl Default for RenderGraphUpdateInfo {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(RenderGraphUpdateInfo, ffi::RpsRenderGraphUpdateInfo);
 
 pub const MAX_QUEUED_FRAMES: usize = 16;
@@ -207,7 +242,7 @@ pub type PfnRenderGraphPhaseRun = Option<unsafe extern "C" fn(RenderGraph, *cons
 pub type PfnRenderGraphPhaseDestroy = Option<unsafe extern "C" fn(RenderGraphPhase)>;
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct RenderGraphPhaseInfo {
     pub phase: RenderGraphPhase,
     pub pfn_run: PfnRenderGraphPhaseRun,
@@ -217,7 +252,7 @@ pub struct RenderGraphPhaseInfo {
 assert_size_and_align!(RenderGraphPhaseInfo, ffi::RpsRenderGraphPhaseInfo);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct MemoryTypeInfo {
     pub default_heap_size: u64,
     pub min_alignment: u32
@@ -226,7 +261,7 @@ pub struct MemoryTypeInfo {
 assert_size_and_align!(MemoryTypeInfo, ffi::RpsMemoryTypeInfo);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct GpuMemoryRequirement {
     pub size: u64,
     pub alignment: u32,
@@ -238,7 +273,7 @@ assert_size_and_align!(GpuMemoryRequirement, ffi::RpsGpuMemoryRequirement);
 pub type HeapId = Index32;
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct HeapPlacement {
     pub heap_id: HeapId,
     pub offset: u64
@@ -247,7 +282,7 @@ pub struct HeapPlacement {
 assert_size_and_align!(HeapPlacement, ffi::RpsHeapPlacement);
 
 #[repr(C)]
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct RuntimeResourceInfo {
     pub resource: RuntimeResource,
     pub resource_desc: ResourceDesc,
@@ -277,6 +312,13 @@ pub struct RuntimeDeviceCreateInfo {
     pub callbacks: RuntimeCallbacks
 }
 
+impl Default for RuntimeDeviceCreateInfo {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(RuntimeDeviceCreateInfo, ffi::RpsRuntimeDeviceCreateInfo);
 
 #[repr(C)]
@@ -284,6 +326,13 @@ assert_size_and_align!(RuntimeDeviceCreateInfo, ffi::RpsRuntimeDeviceCreateInfo)
 pub struct NullRuntimeDeviceCreateInfo {
     pub device_create_info: *const DeviceCreateInfo,
     pub runtime_create_info: *const RuntimeDeviceCreateInfo
+}
+
+impl Default for NullRuntimeDeviceCreateInfo {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 assert_size_and_align!(NullRuntimeDeviceCreateInfo, ffi::RpsNullRuntimeDeviceCreateInfo);
@@ -301,6 +350,13 @@ pub struct ProgramCreateInfo {
     pub signature_desc: *const RenderGraphSignatureDesc,
     pub rps_entry_point: RpslEntry,
     pub default_node_callback: CmdCallback
+}
+
+impl Default for ProgramCreateInfo {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 assert_size_and_align!(ProgramCreateInfo, ffi::RpsProgramCreateInfo);
@@ -342,11 +398,25 @@ pub struct RenderGraphCreateInfoScheduleInfo {
     pub queue_infos: *const QueueFlags
 }
 
+impl Default for RenderGraphCreateInfoScheduleInfo {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub struct RenderGraphCreateInfoMemoryInfo {
     pub num_heaps: u32,
     pub heap_budget_mibs: *const u32
+}
+
+impl Default for RenderGraphCreateInfoMemoryInfo {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 #[repr(C)]
@@ -358,6 +428,13 @@ pub struct RenderGraphCreateInfo {
     pub render_graph_flags: RenderGraphFlags,
     pub num_phases: u32,
     pub phases: *const RenderGraphPhaseInfo
+}
+
+impl Default for RenderGraphCreateInfo {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 assert_size_and_align!(RenderGraphCreateInfo, ffi::RpsRenderGraphCreateInfo);
@@ -465,7 +542,7 @@ pub unsafe fn render_graph_get_main_entry(render_graph: RenderGraph) -> Subprogr
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct CommandBatch {
     pub queue_index: u32,
     pub wait_fences_begin: u32,
@@ -484,6 +561,13 @@ pub struct RenderGraphBatchLayout {
     pub num_fence_signals: u32,
     pub cmd_batches: *const CommandBatch,
     pub wait_fence_indices: *const u32
+}
+
+impl Default for RenderGraphBatchLayout {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 assert_size_and_align!(RenderGraphBatchLayout, ffi::RpsRenderGraphBatchLayout);
@@ -508,6 +592,13 @@ pub struct RenderGraphRecordCommandInfo {
     pub flags: RecordCommandFlags
 }
 
+impl Default for RenderGraphRecordCommandInfo {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(RenderGraphRecordCommandInfo, ffi::RpsRenderGraphRecordCommandInfo);
 
 #[inline]
@@ -527,13 +618,13 @@ pub unsafe fn render_graph_record_commands(render_graph: RenderGraph) -> RpsResu
 pub const CMD_ID_INVALID: u32 = INDEX_NONE_U32;
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct CmdDiagnosticInfoTransitionCmd {
     pub dummy: u32
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct CmdDiagnosticInfoTransitionTransition {
     pub prev_access: AccessAttr,
     pub next_access: AccessAttr,
@@ -548,8 +639,15 @@ pub union CmdDiagnosticInfoTransition {
     pub transition: CmdDiagnosticInfoTransitionTransition
 }
 
+impl Default for CmdDiagnosticInfoTransition {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 #[repr(C)]
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct CmdDiagnosticInfo {
     pub cmd_index: u32,
     pub is_transition: Bool,
@@ -575,10 +673,17 @@ pub struct ResourceDiagnosticInfo {
     pub runtime_resource: RuntimeResource
 }
 
+impl Default for ResourceDiagnosticInfo {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(ResourceDiagnosticInfo, ffi::RpsResourceDiagnosticInfo);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct HeapDiagnosticInfo {
     pub size: u64,
     pub used_size: u64,
@@ -599,6 +704,13 @@ pub struct RenderGraphDiagnosticInfo {
     pub resource_diag_infos: *const ResourceDiagnosticInfo,
     pub cmd_diag_infos: *const CmdDiagnosticInfo,
     pub heap_diag_infos: *const HeapDiagnosticInfo
+}
+
+impl Default for RenderGraphDiagnosticInfo {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 bitflags! {
@@ -632,10 +744,17 @@ pub struct CmdCallbackContext {
     pub user_tag: u32
 }
 
+impl Default for CmdCallbackContext {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(CmdCallbackContext, ffi::RpsCmdCallbackContext);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ResourceAccessInfo {
     pub resource_id: ResourceId,
     pub range: SubresourceRange,
@@ -660,7 +779,7 @@ pub unsafe fn cmd_get_viewport_info(context: *const CmdCallbackContext) -> RpsRe
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct CmdRenderPassBeginInfo {
     pub flags: RuntimeRenderPassFlags
 }
@@ -759,6 +878,13 @@ pub struct RenderGraphExecuteInfo {
     pub user_context: *mut c_void,
     pub pfn_acquire_runtime_cmd_buf_cb: PfnAcquireRuntimeCommandBuffer,
     pub pfn_submit_runtime_cmd_buf_cb: PfnSubmitRuntimeCommandBuffer
+}
+
+impl Default for RenderGraphExecuteInfo {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
 }
 
 assert_size_and_align!(RenderGraphExecuteInfo, ffi::RpsRenderGraphExecuteInfo);

@@ -1,10 +1,9 @@
 use bitflags::bitflags;
 
-use crate::{ffi, Format, ResourceId, SubresourceRange};
-use crate::utils::assert_size_and_align;
+use crate::{ffi, utils::assert_size_and_align, Format, ResourceId, SubresourceRange};
 bitflags! {
     #[repr(transparent)]
-    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+    #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct AccessFlags : u32 {
         const UNKNOWN = ffi::RpsAccessFlagBits_RPS_ACCESS_UNKNOWN as _;
         const INDIRECT_ARGS = ffi::RpsAccessFlagBits_RPS_ACCESS_INDIRECT_ARGS_BIT as _;
@@ -56,7 +55,7 @@ bitflags! {
 
 bitflags! {
     #[repr(transparent)]
-    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+    #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct ShaderStage : u32 {
         const NONE = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_NONE as _;
         const VERTEX = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_VS as _;
@@ -73,7 +72,7 @@ bitflags! {
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct AccessAttr {
     pub access_flags: AccessFlags,
     pub access_stages: ShaderStage
@@ -82,8 +81,9 @@ pub struct AccessAttr {
 assert_size_and_align!(AccessAttr, ffi::RpsAccessAttr);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum Semantic {
+    #[default]
     Unspecified = ffi::RpsSemantic_RPS_SEMANTIC_UNSPECIFIED as _,
     VertexShader = ffi::RpsSemantic_RPS_SEMANTIC_VERTEX_SHADER as _,
     PixelShader = ffi::RpsSemantic_RPS_SEMANTIC_PIXEL_SHADER as _,
@@ -127,7 +127,7 @@ pub enum Semantic {
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct SemanticAttr {
     pub semantic: Semantic,
     pub semantic_index: u32
@@ -137,7 +137,7 @@ assert_size_and_align!(SemanticAttr, ffi::RpsSemanticAttr);
 
 bitflags! {
     #[repr(transparent)]
-    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+    #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct ResourceViewFlags : u32 {
         const NONE = ffi::RpsResourceViewFlagBits_RPS_RESOURCE_VIEW_FLAG_NONE;
         const CUBEMAP = ffi::RpsResourceViewFlagBits_RPS_RESOURCE_VIEW_FLAG_CUBEMAP_BIT;
@@ -145,7 +145,7 @@ bitflags! {
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ResourceView {
     pub resource_id: ResourceId,
     pub view_format: Format,
@@ -156,7 +156,7 @@ pub struct ResourceView {
 assert_size_and_align!(ResourceView, ffi::RpsResourceView);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ImageView {
     pub base: ResourceView,
     pub subresource_range: SubresourceRange,
@@ -167,8 +167,9 @@ pub struct ImageView {
 assert_size_and_align!(ImageView, ffi::RpsImageView);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum ResourceViewComponentMapping {
+    #[default]
     R = ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_R as _,
     G = ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_G as _,
     B = ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_B as _,
@@ -204,7 +205,7 @@ pub const fn image_view_get_component_mapping_channel_a(packed: u32) -> u8 {
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct BufferView {
     pub base: ResourceView,
     pub offset: u64,
@@ -215,8 +216,9 @@ pub struct BufferView {
 assert_size_and_align!(BufferView, ffi::RpsBufferView);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum RuntimeBuiltInTypeIds {
+    #[default]
     ImageView = ffi::RpsRuntimeBuiltInTypeIds_RPS_TYPE_IMAGE_VIEW as _,
     BufferView = ffi::RpsRuntimeBuiltInTypeIds_RPS_TYPE_BUFFER_VIEW as _
 }

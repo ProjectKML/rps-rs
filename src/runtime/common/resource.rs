@@ -1,7 +1,8 @@
+use std::mem;
+
 use bitflags::bitflags;
 
-use crate::{ffi, ffi::RpsFormat, Format, INDEX_NONE_U32};
-use crate::utils::assert_size_and_align;
+use crate::{ffi, ffi::RpsFormat, utils::assert_size_and_align, Format, INDEX_NONE_U32};
 
 pub const RESOURCE_ID_INVALID: u32 = INDEX_NONE_U32;
 
@@ -52,6 +53,13 @@ pub union ClearColorValue {
     pub uint32: [u32; 4]
 }
 
+impl Default for ClearColorValue {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(ClearColorValue, ffi::RpsClearColorValue);
 
 bitflags! {
@@ -68,7 +76,7 @@ bitflags! {
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ClearDepthStencilValue {
     pub depth: f32,
     pub stencil: u32
@@ -83,10 +91,17 @@ pub union ClearValue {
     pub depth_stencil: ClearDepthStencilValue
 }
 
+impl Default for ClearValue {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 assert_size_and_align!(ClearValue, ffi::RpsClearValue);
 
 #[repr(C)]
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct ClearInfo {
     pub format: Format,
     pub value: ClearValue
@@ -95,7 +110,7 @@ pub struct ClearInfo {
 assert_size_and_align!(ClearInfo, ffi::RpsClearInfo);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ResourceImageDesc {
     pub width: u32,
     pub height: u32,
@@ -106,7 +121,7 @@ pub struct ResourceImageDesc {
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ResourceBufferDesc {
     pub size_in_bytes_lo: u32,
     pub size_in_bytes_hi: u32
@@ -119,8 +134,15 @@ pub union ResourceBufferImageDesc {
     pub buffer: ResourceBufferDesc
 }
 
+impl Default for ResourceBufferImageDesc {
+    #[inline]
+    fn default() -> Self {
+        unsafe { mem::zeroed() }
+    }
+}
+
 #[repr(C)]
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct ResourceDesc {
     pub type_: ResourceType,
     pub temporal_layers: u32,
@@ -131,7 +153,7 @@ pub struct ResourceDesc {
 assert_size_and_align!(ResourceDesc, ffi::RpsResourceDesc);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct SubresourceRange {
     pub base_mip_level: u16,
     pub mip_levels: u16,
@@ -145,7 +167,7 @@ pub const RESOURCE_MAX_TEMPORAL_LAYERS: usize = 256;
 pub const MAX_SIMULTANEOUS_RENDER_TARGET_COUNT: usize = 8;
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct CmdRenderTargetInfo {
     pub num_render_targets: u32,
     pub num_samples: u32,

@@ -3,8 +3,9 @@ use std::{ffi::c_char, mem};
 use crate::{ffi, TRUE};
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum Format {
+    #[default]
     Unknown = ffi::RpsFormat_RPS_FORMAT_UNKNOWN as _,
     R32G32B32A32Typeless = ffi::RpsFormat_RPS_FORMAT_R32G32B32A32_TYPELESS as _,
     R32G32B32A32Float = ffi::RpsFormat_RPS_FORMAT_R32G32B32A32_FLOAT as _,
