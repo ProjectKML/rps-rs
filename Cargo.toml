@@ -6,24 +6,14 @@ edition = "2021"
 [dependencies]
 ash = { git = "https://github.com/projectkml/ash" }
 bitflags = "2.0.0-rc.1"
+render-pipeline-shaders-sys = { path = "render-pipeline-shaders-sys" }
 libc = "0.2.138"
+libloading = "0.7.4"
 static_assertions = "1.1.0"
-
-[build-dependencies]
-cc = "1.0.78"
-
-[build-dependencies.bindgen]
-version = "0.63.0"
-optional = true
 
 [features]
 default = ["vulkan"]
-generate_bindings = ["bindgen"]
-d3d11 = []
-d3d12 = []
-vulkan = []
+d3d11 = ["render-pipeline-shaders-sys/d3d11"]
+d3d12 = ["render-pipeline-shaders-sys/d3d12"]
+vulkan = ["render-pipeline-shaders-sys/vulkan"]
 
-[profile.release]
-lto = true
-opt-level = 3
-codegen-units = 1

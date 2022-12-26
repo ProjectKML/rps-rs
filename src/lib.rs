@@ -1,7 +1,11 @@
 #![allow(clippy::missing_safety_doc)]
 
 mod core;
-pub mod ffi;
+
+mod ffi {
+    pub use render_pipeline_shaders_sys::*;
+}
+
 mod runtime;
 mod utils;
 

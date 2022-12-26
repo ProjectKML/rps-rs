@@ -1,0 +1,21 @@
+[package]
+name = "render-pipeline-shaders-sys"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ash = { git = "https://github.com/projectkml/ash" }
+
+[build-dependencies]
+bindgen = "0.63.0"
+cc = "1.0.78"
+
+[features]
+d3d11 = []
+d3d12 = []
+vulkan = []
+
+[profile.release]
+lto = true
+opt-level = 3
+codegen-units = 1

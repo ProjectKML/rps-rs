@@ -8,15 +8,16 @@ pub const RESOURCE_ID_INVALID: u32 = INDEX_NONE_U32;
 
 pub type ResourceId = u32;
 
-#[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
-pub enum ResourceType {
-    #[default]
-    Unknown = ffi::RpsResourceType_RPS_RESOURCE_TYPE_UNKNOWN as _,
-    Buffer = ffi::RpsResourceType_RPS_RESOURCE_TYPE_BUFFER as _,
-    Image1D = ffi::RpsResourceType_RPS_RESOURCE_TYPE_IMAGE_1D as _,
-    Image2D = ffi::RpsResourceType_RPS_RESOURCE_TYPE_IMAGE_2D as _,
-    Image3D = ffi::RpsResourceType_RPS_RESOURCE_TYPE_IMAGE_3D as _
+pub struct ResourceType(u32);
+
+impl ResourceType {
+    pub const UNKNOWN: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_UNKNOWN);
+    pub const BUFFER: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_BUFFER);
+    pub const IMAGE_1D: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_IMAGE_1D);
+    pub const IMAGE_2D: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_IMAGE_2D);
+    pub const IMAGE_3D: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_IMAGE_3D);
+    pub const COUNT: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_COUNT);
 }
 
 bitflags! {

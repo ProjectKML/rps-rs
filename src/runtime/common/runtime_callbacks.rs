@@ -112,13 +112,14 @@ impl Default for RuntimeOpCreateNodeUserResourcesArgs {
 
 assert_size_and_align!(RuntimeOpCreateNodeUserResourcesArgs, ffi::RpsRuntimeOpCreateNodeUserResourcesArgs);
 
-#[repr(C)]
+#[repr(transparent)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
-pub enum RuntimeDebugMarkerMode {
-    #[default]
-    Begin = ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_BEGIN as _,
-    Label = ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_LABEL as _,
-    End = ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_END as _
+pub struct RuntimeDebugMarkerMode(u32);
+
+impl RuntimeDebugMarkerMode {
+    pub const BEGIN: Self = Self(ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_BEGIN);
+    pub const LABEL: Self = Self(ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_LABEL);
+    pub const END: Self = Self(ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_END);
 }
 
 bitflags! {

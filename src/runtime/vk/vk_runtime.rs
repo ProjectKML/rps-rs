@@ -18,10 +18,89 @@ bitflags! {
 }
 
 #[repr(C)]
+#[derive(Clone, Copy)]
+pub struct VKFunctions {
+    pub vk_get_physical_device_properties: vk::PFN_vkGetPhysicalDeviceProperties,
+    pub vk_get_physical_device_memory_properties: vk::PFN_vkGetPhysicalDeviceMemoryProperties,
+    pub vk_create_image: vk::PFN_vkCreateImage,
+    pub vk_destroy_image: vk::PFN_vkDestroyImage,
+    pub vk_bind_image_memory: vk::PFN_vkBindImageMemory,
+    pub vk_get_image_memory_requirements: vk::PFN_vkGetImageMemoryRequirements,
+    pub vk_create_buffer: vk::PFN_vkCreateBuffer,
+    pub vk_destroy_buffer: vk::PFN_vkDestroyBuffer,
+    pub vk_bind_buffer_memory: vk::PFN_vkBindBufferMemory,
+    pub vk_get_buffer_memory_requirements: vk::PFN_vkGetBufferMemoryRequirements,
+    pub vk_create_framebuffer: vk::PFN_vkCreateFramebuffer,
+    pub vk_destroy_framebuffer: vk::PFN_vkDestroyFramebuffer,
+    pub vk_create_render_pass: vk::PFN_vkCreateRenderPass,
+    pub vk_destroy_render_pass: vk::PFN_vkDestroyRenderPass,
+    pub vk_create_buffer_view: vk::PFN_vkCreateBufferView,
+    pub vk_destroy_buffer_view: vk::PFN_vkDestroyBufferView,
+    pub vk_create_image_view: vk::PFN_vkCreateImageView,
+    pub vk_destroy_image_view: vk::PFN_vkDestroyImageView,
+    pub vk_allocate_memory: vk::PFN_vkAllocateMemory,
+    pub vk_free_memory: vk::PFN_vkFreeMemory,
+    pub vk_cmd_begin_render_pass: vk::PFN_vkCmdBeginRenderPass,
+    pub vk_cmd_end_render_pass: vk::PFN_vkCmdEndRenderPass,
+    pub vk_cmd_set_viewport: vk::PFN_vkCmdSetViewport,
+    pub vk_cmd_set_scissor: vk::PFN_vkCmdSetScissor,
+    pub vk_cmd_pipeline_barrier: vk::PFN_vkCmdPipelineBarrier,
+    pub vk_cmd_clear_color_image: vk::PFN_vkCmdClearColorImage,
+    pub vk_cmd_clear_depth_stencil_image: vk::PFN_vkCmdClearDepthStencilImage,
+    pub vk_cmd_copy_image: vk::PFN_vkCmdCopyImage,
+    pub vk_cmd_copy_buffer: vk::PFN_vkCmdCopyBuffer,
+    pub vk_cmd_copy_image_to_buffer: vk::PFN_vkCmdCopyImageToBuffer,
+    pub vk_cmd_copy_buffer_to_image: vk::PFN_vkCmdCopyBufferToImage,
+    pub vk_cmd_resolve_image: vk::PFN_vkCmdResolveImage
+}
+
+assert_size_and_align!(VKFunctions, ffi::RpsVKFunctions);
+
+impl VKFunctions {
+    pub fn new(instance: &ash::Instance, device: &ash::Device) -> Self {
+        Self {
+            vk_get_physical_device_properties: instance.fp_v1_0().get_physical_device_properties,
+            vk_get_physical_device_memory_properties: instance.fp_v1_0().get_physical_device_memory_properties,
+            vk_create_image: device.fp_v1_0().create_image,
+            vk_destroy_image: device.fp_v1_0().destroy_image,
+            vk_bind_image_memory: device.fp_v1_0().bind_image_memory,
+            vk_get_image_memory_requirements: device.fp_v1_0().get_image_memory_requirements,
+            vk_create_buffer: device.fp_v1_0().create_buffer,
+            vk_destroy_buffer: device.fp_v1_0().destroy_buffer,
+            vk_bind_buffer_memory: device.fp_v1_0().bind_buffer_memory,
+            vk_get_buffer_memory_requirements: device.fp_v1_0().get_buffer_memory_requirements,
+            vk_create_framebuffer: device.fp_v1_0().create_framebuffer,
+            vk_destroy_framebuffer: device.fp_v1_0().destroy_framebuffer,
+            vk_create_render_pass: device.fp_v1_0().create_render_pass,
+            vk_destroy_render_pass: device.fp_v1_0().destroy_render_pass,
+            vk_create_buffer_view: device.fp_v1_0().create_buffer_view,
+            vk_destroy_buffer_view: device.fp_v1_0().destroy_buffer_view,
+            vk_create_image_view: device.fp_v1_0().create_image_view,
+            vk_destroy_image_view: device.fp_v1_0().destroy_image_view,
+            vk_allocate_memory: device.fp_v1_0().allocate_memory,
+            vk_free_memory: device.fp_v1_0().free_memory,
+            vk_cmd_begin_render_pass: device.fp_v1_0().cmd_begin_render_pass,
+            vk_cmd_end_render_pass: device.fp_v1_0().cmd_end_render_pass,
+            vk_cmd_set_viewport: device.fp_v1_0().cmd_set_viewport,
+            vk_cmd_set_scissor: device.fp_v1_0().cmd_set_scissor,
+            vk_cmd_pipeline_barrier: device.fp_v1_0().cmd_pipeline_barrier,
+            vk_cmd_clear_color_image: device.fp_v1_0().cmd_clear_color_image,
+            vk_cmd_clear_depth_stencil_image: device.fp_v1_0().cmd_clear_depth_stencil_image,
+            vk_cmd_copy_image: device.fp_v1_0().cmd_copy_image,
+            vk_cmd_copy_buffer: device.fp_v1_0().cmd_copy_buffer,
+            vk_cmd_copy_image_to_buffer: device.fp_v1_0().cmd_copy_image_to_buffer,
+            vk_cmd_copy_buffer_to_image: device.fp_v1_0().cmd_copy_buffer_to_image,
+            vk_cmd_resolve_image: device.fp_v1_0().cmd_resolve_image
+        }
+    }
+}
+
+#[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub struct VKRuntimeDeviceCreateInfo {
     pub device_create_info: *const DeviceCreateInfo,
     pub runtime_create_info: *const RuntimeDeviceCreateInfo,
+    pub vulkan_functions: *const VKFunctions,
     pub vk_device: vk::Device,
     pub vk_physical_device: vk::PhysicalDevice,
     pub flags: VKRuntimeFlags

@@ -1,10 +1,12 @@
 use std::{
     ffi::{c_char, c_void},
     mem,
-    mem::MaybeUninit
+    mem::MaybeUninit,
+    path::{Path, PathBuf}
 };
 
 use bitflags::bitflags;
+use libloading::Library;
 
 use crate::{
     ffi, result_from_ffi,
@@ -171,24 +173,25 @@ impl TypeInfo {
     }
 }
 
-#[repr(C)]
+#[repr(transparent)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
-pub enum BuiltInTypeIds {
-    #[default]
-    Bool = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_BOOL as _,
-    Int8 = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT8 as _,
-    UInt8 = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT8 as _,
-    Int16 = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT16 as _,
-    UInt16 = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT16 as _,
-    Int32 = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT32 as _,
-    UInt32 = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT32 as _,
-    Int64 = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT64 as _,
-    UInt64 = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT64 as _,
-    Float32 = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_FLOAT32 as _,
-    Float64 = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_FLOAT64 as _,
-    MaxValue = ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_MAX_VALUE as _,
-    RuntimeDefinedBegin = ffi::RpsBuiltInTypeIds_RPS_TYPE_RUNTIME_DEFINED_BEGIN as _,
-    UserDefinedBegin = ffi::RpsBuiltInTypeIds_RPS_TYPE_USER_DEFINED_BEGIN as _
+pub struct BuiltInTypeIds(u32);
+
+impl BuiltInTypeIds {
+    pub const BOOL: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_BOOL);
+    pub const INT8: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT8);
+    pub const UINT8: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT8);
+    pub const INT16: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT16);
+    pub const UINT16: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT16);
+    pub const INT32: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT32);
+    pub const UINT32: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT32);
+    pub const INT64: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT64);
+    pub const UINT64: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT64);
+    pub const FLOAT32: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_FLOAT32);
+    pub const FLOAT64: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_FLOAT64);
+    pub const MAX_VALUE: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_MAX_VALUE);
+    pub const RUNTIME_DEFINED_BEGIN: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_RUNTIME_DEFINED_BEGIN);
+    pub const USER_DEFINED_BEGIN: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_USER_DEFINED_BEGIN);
 }
 
 pub type TypeId = i32;
@@ -248,10 +251,102 @@ pub unsafe fn make_rpsl_entry_name(buf: *mut c_char, buf_size: usize, module_nam
 
 define_handle!(JITModule);
 
-pub type PfnJITStartup = Option<unsafe extern "C" fn(i32, *const *const c_char) -> i32>;
-pub type PfnJITShutdown = Option<unsafe extern "C" fn()>;
-pub type PfnJITLoad = Option<unsafe extern "C" fn(*const c_char, *mut JITModule) -> i32>;
-pub type PfnJITUnload = Option<unsafe extern "C" fn(JITModule)>;
-pub type PfnJITGetEntryPoint = Option<unsafe extern "C" fn(JITModule, *const c_char, *mut u64) -> i32>;
+pub type PfnJITStartup = unsafe extern "C" fn(i32, *const *const c_char) -> i32;
+pub type PfnJITShutdown = unsafe extern "C" fn();
+pub type PfnJITLoad = unsafe extern "C" fn(*const c_char, *mut JITModule) -> i32;
+pub type PfnJITUnload = unsafe extern "C" fn(JITModule);
+pub type PfnJITGetEntryPoint = unsafe extern "C" fn(JITModule, *const c_char, *mut u64) -> i32;
 
-//TODO: CONSTANTS
+pub const JIT_PROC_NAME_STARTUP: &'static [u8] = b"RpsJITStartup\0";
+pub const JIT_PROC_NAME_SHUTDOWN: &'static [u8] = b"RpsJITShutdown\0";
+pub const JIT_PROC_NAME_LOAD: &'static [u8] = b"RpsJITLoad\0";
+pub const JIT_PROC_NAME_UNLOAD: &'static [u8] = b"RpsJITUnload\0";
+pub const JIT_PROC_NAME_GETENTRYPOINT: &'static [u8] = b"RpsJITGetEntryPoint\0";
+
+#[cfg(target_os = "windows")]
+fn jit_lib_name() -> &'static Path {
+    Path::new("rps-jit.dll")
+}
+
+#[cfg(any(target_os = "linux", target_os = "android"))]
+fn jit_lib_name() -> &'static Path {
+    todo!("Not supported at the moment")
+}
+
+#[cfg(target_os = "macos")]
+fn jit_lib_name() -> &'static Path {
+    todo!("Not supported at the moment")
+}
+
+pub struct JITLibrary {
+    _library: Library,
+
+    jit_startup: PfnJITStartup,
+    jit_shutdown: PfnJITShutdown,
+    jit_load: PfnJITLoad,
+    jit_unload: PfnJITUnload,
+    jit_get_entry_point: PfnJITGetEntryPoint
+}
+
+impl JITLibrary {
+    pub fn new(path: Option<PathBuf>) -> Result<Self, libloading::Error> {
+        let total_path = if let Some(total_path) = path {
+            if total_path.is_file() {
+                total_path
+            } else {
+                total_path.join(jit_lib_name())
+            }
+        } else {
+            jit_lib_name().to_owned()
+        };
+
+        let library = unsafe { Library::new(&total_path) }?;
+
+        unsafe {
+            let jit_startup = mem::transmute(library.get::<PfnJITStartup>(JIT_PROC_NAME_STARTUP)?.into_raw().into_raw());
+            let jit_shutdown = mem::transmute(library.get::<PfnJITShutdown>(JIT_PROC_NAME_SHUTDOWN)?.into_raw().into_raw());
+            let jit_load = mem::transmute(library.get::<PfnJITLoad>(JIT_PROC_NAME_LOAD)?.into_raw().into_raw());
+            let jit_unload = mem::transmute(library.get::<PfnJITUnload>(JIT_PROC_NAME_UNLOAD)?.into_raw().into_raw());
+            let jit_get_entry_point = mem::transmute(library.get::<PfnJITGetEntryPoint>(JIT_PROC_NAME_GETENTRYPOINT)?.into_raw().into_raw());
+
+            Ok(Self {
+                _library: library,
+
+                jit_startup,
+                jit_shutdown,
+                jit_load,
+                jit_unload,
+                jit_get_entry_point
+            })
+        }
+    }
+
+    #[inline]
+    pub unsafe fn startup(&self, argc: i32, args: *const *const c_char) -> i32 {
+        (self.jit_startup)(argc, args)
+    }
+
+    #[inline]
+    pub unsafe fn shutdown(&self) {
+        (self.jit_shutdown)();
+    }
+
+    #[inline]
+    pub unsafe fn load(&self, name: *const c_char) -> RpsResult<JITModule> {
+        let mut result = MaybeUninit::uninit();
+        result_from_ffi((self.jit_load)(name, &mut result as *mut _ as *mut _))?;
+        Ok(result.assume_init())
+    }
+
+    #[inline]
+    pub unsafe fn unload(&self, jit_module: JITModule) {
+        (self.jit_unload)(jit_module);
+    }
+
+    #[inline]
+    pub unsafe fn get_entry_point(&self, jit_module: JITModule, symbol_name: *const c_char) -> RpsResult<u64> {
+        let mut result = MaybeUninit::uninit();
+        result_from_ffi((self.jit_get_entry_point)(jit_module, symbol_name, &mut result as *mut _ as *mut _))?;
+        Ok(result.assume_init())
+    }
+}

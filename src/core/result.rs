@@ -1,42 +1,52 @@
 use std::{
     error::Error,
     fmt::{Debug, Display, Formatter},
-    mem
+    mem, slice
 };
 
 use crate::ffi;
 
-#[repr(C)]
-#[derive(Debug)]
-pub enum Result {
-    Ok = ffi::RpsResult_RPS_OK as _,
-    Unspecified = ffi::RpsResult_RPS_ERROR_UNSPECIFIED as _,
-    UnrecognizedCommand = ffi::RpsResult_RPS_ERROR_UNRECOGNIZED_COMMAND as _,
-    InvalidArguments = ffi::RpsResult_RPS_ERROR_INVALID_ARGUMENTS as _,
-    InvalidData = ffi::RpsResult_RPS_ERROR_INVALID_DATA as _,
-    InvalidOperation = ffi::RpsResult_RPS_ERROR_INVALID_OPERATION as _,
-    OutOfMemory = ffi::RpsResult_RPS_ERROR_OUT_OF_MEMORY as _,
-    FileNotFound = ffi::RpsResult_RPS_ERROR_FILE_NOT_FOUND as _,
-    InvalidFileFormat = ffi::RpsResult_RPS_ERROR_INVALID_FILE_FORMAT as _,
-    UnsupportedVersionTooOld = ffi::RpsResult_RPS_ERROR_UNSUPPORTED_VERSION_TOO_OLD as _,
-    UnsupportedVersionTooNew = ffi::RpsResult_RPS_ERROR_UNSUPPORTED_VERSION_TOO_NEW as _,
-    UnknownNode = ffi::RpsResult_RPS_ERROR_UNKNOWN_NODE as _,
-    IndexOutOfBounds = ffi::RpsResult_RPS_ERROR_INDEX_OUT_OF_BOUNDS as _,
-    CommandAlreadyFinal = ffi::RpsResult_RPS_ERROR_COMMAND_ALREADY_FINAL as _,
-    InteropDataLayoutMismatch = ffi::RpsResult_RPS_ERROR_INTEROP_DATA_LAYOUT_MISMATCH as _,
-    KeyNotFound = ffi::RpsResult_RPS_ERROR_KEY_NOT_FOUND as _,
-    KeyDuplicated = ffi::RpsResult_RPS_ERROR_KEY_DUPLICATED as _,
-    NotImplemented = ffi::RpsResult_RPS_ERROR_NOT_IMPLEMENTED as _,
-    IntegerOverflow = ffi::RpsResult_RPS_ERROR_INTEGER_OVERFLOW as _,
-    RangeOverlapping = ffi::RpsResult_RPS_ERROR_RANGE_OVERLAPPING as _,
-    ValidationFailed = ffi::RpsResult_RPS_ERROR_VALIDATION_FAILED as _,
-    InvalidProgram = ffi::RpsResult_RPS_ERROR_INVALID_PROGRAM as _,
-    UnsupportedModuleVersion = ffi::RpsResult_RPS_ERROR_UNSUPPORTED_MODULE_VERSION as _,
-    TypeMismatch = ffi::RpsResult_RPS_ERROR_TYPE_MISMATCH as _,
-    NotSupported = ffi::RpsResult_RPS_ERROR_NOT_SUPPORTED as _,
-    RuntimeApiError = ffi::RpsResult_RPS_ERROR_RUNTIME_API_ERROR as _,
-    InternalError = ffi::RpsResult_RPS_ERROR_INTERNAL_ERROR as _,
-    CodeCount = ffi::RpsResult_RPS_RESULT_CODE_COUNT as _
+#[repr(transparent)]
+#[derive(Clone, Copy, Default, PartialEq, Eq, Hash)]
+pub struct Result(i32);
+
+impl Result {
+    pub const OK: Self = Self(ffi::RpsResult_RPS_OK);
+    pub const UNSPECIFIED: Self = Self(ffi::RpsResult_RPS_ERROR_UNSPECIFIED);
+    pub const UNRECOGNIZED_COMMAND: Self = Self(ffi::RpsResult_RPS_ERROR_UNRECOGNIZED_COMMAND);
+    pub const INVALID_ARGUMENTS: Self = Self(ffi::RpsResult_RPS_ERROR_INVALID_ARGUMENTS);
+    pub const INVALID_DATA: Self = Self(ffi::RpsResult_RPS_ERROR_INVALID_DATA);
+    pub const INVALID_OPERATION: Self = Self(ffi::RpsResult_RPS_ERROR_INVALID_OPERATION);
+    pub const OUT_OF_MEMORY: Self = Self(ffi::RpsResult_RPS_ERROR_OUT_OF_MEMORY);
+    pub const FILE_NOT_FOUND: Self = Self(ffi::RpsResult_RPS_ERROR_FILE_NOT_FOUND);
+    pub const INVALID_FILE_FORMAT: Self = Self(ffi::RpsResult_RPS_ERROR_INVALID_FILE_FORMAT);
+    pub const UNSUPPORTED_VERSION_TOO_OLD: Self = Self(ffi::RpsResult_RPS_ERROR_UNSUPPORTED_VERSION_TOO_OLD);
+    pub const UNSUPPORTED_VERSION_TOO_NEW: Self = Self(ffi::RpsResult_RPS_ERROR_UNSUPPORTED_VERSION_TOO_NEW);
+    pub const UNKNOWN_NODE: Self = Self(ffi::RpsResult_RPS_ERROR_UNKNOWN_NODE);
+    pub const INDEX_OUT_OF_BOUNDS: Self = Self(ffi::RpsResult_RPS_ERROR_INDEX_OUT_OF_BOUNDS);
+    pub const COMMAND_ALREADY_FINAL: Self = Self(ffi::RpsResult_RPS_ERROR_COMMAND_ALREADY_FINAL);
+    pub const INTEROP_DATA_LAYOUT_MISMATCH: Self = Self(ffi::RpsResult_RPS_ERROR_INTEROP_DATA_LAYOUT_MISMATCH);
+    pub const KEY_NOT_FOUND: Self = Self(ffi::RpsResult_RPS_ERROR_KEY_NOT_FOUND);
+    pub const KEY_DUPLICATED: Self = Self(ffi::RpsResult_RPS_ERROR_KEY_DUPLICATED);
+    pub const NOT_IMPLEMENTED: Self = Self(ffi::RpsResult_RPS_ERROR_NOT_IMPLEMENTED);
+    pub const INTEGER_OVERFLOW: Self = Self(ffi::RpsResult_RPS_ERROR_INTEGER_OVERFLOW);
+    pub const RANGE_OVERLAPPING: Self = Self(ffi::RpsResult_RPS_ERROR_RANGE_OVERLAPPING);
+    pub const VALIDATION_FAILED: Self = Self(ffi::RpsResult_RPS_ERROR_VALIDATION_FAILED);
+    pub const INVALID_PROGRAM: Self = Self(ffi::RpsResult_RPS_ERROR_INVALID_PROGRAM);
+    pub const UNSUPPORTED_MODULE_VERSION: Self = Self(ffi::RpsResult_RPS_ERROR_UNSUPPORTED_MODULE_VERSION);
+    pub const TYPE_MISMATCH: Self = Self(ffi::RpsResult_RPS_ERROR_TYPE_MISMATCH);
+    pub const NOT_SUPPORTED: Self = Self(ffi::RpsResult_RPS_ERROR_NOT_SUPPORTED);
+    pub const RUNTIME_API_ERROR: Self = Self(ffi::RpsResult_RPS_ERROR_RUNTIME_API_ERROR);
+    pub const INTERNAL_ERROR: Self = Self(ffi::RpsResult_RPS_ERROR_INTERNAL_ERROR);
+    pub const CODE_COUNT: Self = Self(ffi::RpsResult_RPS_RESULT_CODE_COUNT);
+}
+
+impl Debug for Result {
+    #[inline]
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let name = unsafe { ffi::rpsResultGetName(mem::transmute(*self)) };
+        write!(f, "{}", unsafe { std::str::from_utf8_unchecked(slice::from_raw_parts(name.cast(), libc::strlen(name))) })
+    }
 }
 
 impl Display for Result {
@@ -54,7 +64,7 @@ pub type RpsResult<T> = std::result::Result<T, Result>;
 pub unsafe fn result_from_ffi(result: ffi::RpsResult) -> RpsResult<()> {
     let result: Result = mem::transmute(result);
     match result {
-        Result::Ok => Ok(()),
+        Result::OK => Ok(()),
         _ => Err(result)
     }
 }

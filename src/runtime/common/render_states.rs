@@ -26,32 +26,32 @@ pub struct Rect {
 
 assert_size_and_align!(Rect, ffi::RpsRect);
 
-#[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
-pub enum PrimitiveTopology {
-    #[default]
-    Undefined = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_UNDEFINED as _,
-    PointList = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_POINTLIST as _,
-    LineList = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_LINELIST as _,
-    LineStrip = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_LINESTRIP as _,
-    TriangleList = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_TRIANGLELIST as _,
-    TriangleStrip = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP as _,
-    LineListAdj = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_LINELIST_ADJ as _,
-    LineStripAdj = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_LINESTRIP_ADJ as _,
-    TriangleListAdj = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ as _,
-    TriangleStripAdj = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ as _,
-    PatchList = ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_PATCHLIST as _
+pub struct PrimitiveTopology(u32);
+
+impl PrimitiveTopology {
+    pub const UNDEFINED: Self = Self(ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_UNDEFINED);
+    pub const POINTLIST: Self = Self(ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_POINTLIST);
+    pub const LINELIST: Self = Self(ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_LINELIST);
+    pub const LINESTRIP: Self = Self(ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_LINESTRIP);
+    pub const TRIANGLELIST: Self = Self(ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    pub const TRIANGLESTRIP: Self = Self(ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+    pub const LINELIST_ADJ: Self = Self(ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_LINELIST_ADJ);
+    pub const LINESTRIP_ADJ: Self = Self(ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_LINESTRIP_ADJ);
+    pub const TRIANGLELIST_ADJ: Self = Self(ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ);
+    pub const TRIANGLESTRIP_ADJ: Self = Self(ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ);
+    pub const PATCHLIST: Self = Self(ffi::RpsPrimitiveTopology_RPS_PRIMITIVE_TOPOLOGY_PATCHLIST);
 }
 
-#[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
-pub enum ResolveMode {
-    #[default]
-    Average = ffi::RpsResolveMode_RPS_RESOLVE_MODE_AVERAGE as _,
-    Min = ffi::RpsResolveMode_RPS_RESOLVE_MODE_MIN as _,
-    Max = ffi::RpsResolveMode_RPS_RESOLVE_MODE_MAX as _,
-    EncodeSamplerFeedback = ffi::RpsResolveMode_RPS_RESOLVE_MODE_ENCODE_SAMPLER_FEEDBACK as _,
-    DecodeSamplerFeedback = ffi::RpsResolveMode_RPS_RESOLVE_MODE_DECODE_SAMPLER_FEEDBACK as _
+pub struct ResolveMode(u32);
+
+impl ResolveMode {
+    pub const AVERAGE: Self = Self(ffi::RpsResolveMode_RPS_RESOLVE_MODE_AVERAGE);
+    pub const MIN: Self = Self(ffi::RpsResolveMode_RPS_RESOLVE_MODE_MIN);
+    pub const MAX: Self = Self(ffi::RpsResolveMode_RPS_RESOLVE_MODE_MAX);
+    pub const ENCODE_SAMPLER_FEEDBACK: Self = Self(ffi::RpsResolveMode_RPS_RESOLVE_MODE_ENCODE_SAMPLER_FEEDBACK);
+    pub const DECODE_SAMPLER_FEEDBACK: Self = Self(ffi::RpsResolveMode_RPS_RESOLVE_MODE_DECODE_SAMPLER_FEEDBACK);
 }
 
 #[repr(C)]

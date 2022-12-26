@@ -58,15 +58,15 @@ bitflags! {
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct ShaderStage : u32 {
         const NONE = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_NONE as _;
-        const VERTEX = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_VS as _;
-        const PIXEL = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_PS as _;
-        const GEOMETRY = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_GS as _;
-        const COMPUTE = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_CS as _;
-        const HULL = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_HS as _;
-        const DOMAIN = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_DS as _;
+        const VS = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_VS as _;
+        const PS = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_PS as _;
+        const GS = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_GS as _;
+        const CS = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_CS as _;
+        const HS = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_HS as _;
+        const DS = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_DS as _;
         const RAYTRACING = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_RAYTRACING as _;
-        const AMPLIFICATION = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_AS as _;
-        const MESH = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_MS as _;
+        const AS = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_AS as _;
+        const MS = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_MS as _;
         const ALL = ffi::RpsShaderStageBits_RPS_SHADER_STAGE_ALL as _;
     }
 }
@@ -80,50 +80,54 @@ pub struct AccessAttr {
 
 assert_size_and_align!(AccessAttr, ffi::RpsAccessAttr);
 
-#[repr(C)]
+#[repr(transparent)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
-pub enum Semantic {
-    #[default]
-    Unspecified = ffi::RpsSemantic_RPS_SEMANTIC_UNSPECIFIED as _,
-    VertexShader = ffi::RpsSemantic_RPS_SEMANTIC_VERTEX_SHADER as _,
-    PixelShader = ffi::RpsSemantic_RPS_SEMANTIC_PIXEL_SHADER as _,
-    GeometryShader = ffi::RpsSemantic_RPS_SEMANTIC_GEOMETRY_SHADER as _,
-    ComputeShader = ffi::RpsSemantic_RPS_SEMANTIC_COMPUTE_SHADER as _,
-    HullShader = ffi::RpsSemantic_RPS_SEMANTIC_HULL_SHADER as _,
-    DomainShader = ffi::RpsSemantic_RPS_SEMANTIC_DOMAIN_SHADER as _,
-    RaytracingPipeline = ffi::RpsSemantic_RPS_SEMANTIC_RAYTRACING_PIPELINE as _,
-    AmplificationShader = ffi::RpsSemantic_RPS_SEMANTIC_AMPLIFICATION_SHADER as _,
-    MeshShader = ffi::RpsSemantic_RPS_SEMANTIC_MESH_SHADER as _,
-    VertexLayout = ffi::RpsSemantic_RPS_SEMANTIC_VERTEX_LAYOUT as _,
-    StreamOutLayout = ffi::RpsSemantic_RPS_SEMANTIC_STREAM_OUT_LAYOUT as _,
-    StreamOutDesc = ffi::RpsSemantic_RPS_SEMANTIC_STREAM_OUT_DESC as _,
-    BlendState = ffi::RpsSemantic_RPS_SEMANTIC_BLEND_STATE as _,
-    RenderTargetBlend = ffi::RpsSemantic_RPS_SEMANTIC_RENDER_TARGET_BLEND as _,
-    DepthStencilState = ffi::RpsSemantic_RPS_SEMANTIC_DEPTH_STENCIL_STATE as _,
-    RasterizerState = ffi::RpsSemantic_RPS_SEMANTIC_RASTERIZER_STATE as _,
-    DynamicStateBeginOrViewport = ffi::RpsSemantic_RPS_SEMANTIC_DYNAMIC_STATE_BEGIN as _,
-    Scissor = ffi::RpsSemantic_RPS_SEMANTIC_SCISSOR as _,
-    PrimitiveTopology = ffi::RpsSemantic_RPS_SEMANTIC_PRIMITIVE_TOPOLOGY as _,
-    PatchControlPoints = ffi::RpsSemantic_RPS_SEMANTIC_PATCH_CONTROL_POINTS as _,
-    PrimitiveStripCutIndex = ffi::RpsSemantic_RPS_SEMANTIC_PRIMITIVE_STRIP_CUT_INDEX as _,
-    BlendFactor = ffi::RpsSemantic_RPS_SEMANTIC_BLEND_FACTOR as _,
-    StencilRef = ffi::RpsSemantic_RPS_SEMANTIC_STENCIL_REF as _,
-    DepthBounds = ffi::RpsSemantic_RPS_SEMANTIC_DEPTH_BOUNDS as _,
-    SampleLocation = ffi::RpsSemantic_RPS_SEMANTIC_SAMPLE_LOCATION as _,
-    ShadingRate = ffi::RpsSemantic_RPS_SEMANTIC_SHADING_RATE as _,
-    ColorClearValue = ffi::RpsSemantic_RPS_SEMANTIC_COLOR_CLEAR_VALUE as _,
-    DepthClearValue = ffi::RpsSemantic_RPS_SEMANTIC_DEPTH_CLEAR_VALUE as _,
-    StencilClearValue = ffi::RpsSemantic_RPS_SEMANTIC_STENCIL_CLEAR_VALUE as _,
-    ResourceBindingBeginOrVertexBuffer = ffi::RpsSemantic_RPS_SEMANTIC_RESOURCE_BINDING_BEGIN as _,
-    IndexBuffer = ffi::RpsSemantic_RPS_SEMANTIC_INDEX_BUFFER as _,
-    IndirectArgs = ffi::RpsSemantic_RPS_SEMANTIC_INDIRECT_ARGS as _,
-    StreamOutBuffer = ffi::RpsSemantic_RPS_SEMANTIC_STREAM_OUT_BUFFER as _,
-    IndirectCount = ffi::RpsSemantic_RPS_SEMANTIC_INDIRECT_COUNT as _,
-    RenderTarget = ffi::RpsSemantic_RPS_SEMANTIC_RENDER_TARGET as _,
-    DepthStencilTarget = ffi::RpsSemantic_RPS_SEMANTIC_DEPTH_STENCIL_TARGET as _,
-    ShadingRateImage = ffi::RpsSemantic_RPS_SEMANTIC_SHADING_RATE_IMAGE as _,
-    ResolveTarget = ffi::RpsSemantic_RPS_SEMANTIC_RESOLVE_TARGET as _,
-    UserResourceBinding = ffi::RpsSemantic_RPS_SEMANTIC_USER_RESOURCE_BINDING as _
+pub struct Semantic(u32);
+
+impl Semantic {
+    pub const UNSPECIFIED: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_UNSPECIFIED);
+    pub const VERTEX_SHADER: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_VERTEX_SHADER);
+    pub const PIXEL_SHADER: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_PIXEL_SHADER);
+    pub const GEOMETRY_SHADER: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_GEOMETRY_SHADER);
+    pub const COMPUTE_SHADER: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_COMPUTE_SHADER);
+    pub const HULL_SHADER: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_HULL_SHADER);
+    pub const DOMAIN_SHADER: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_DOMAIN_SHADER);
+    pub const RAYTRACING_PIPELINE: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_RAYTRACING_PIPELINE);
+    pub const AMPLIFICATION_SHADER: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_AMPLIFICATION_SHADER);
+    pub const MESH_SHADER: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_MESH_SHADER);
+    pub const VERTEX_LAYOUT: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_VERTEX_LAYOUT);
+    pub const STREAM_OUT_LAYOUT: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_STREAM_OUT_LAYOUT);
+    pub const STREAM_OUT_DESC: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_STREAM_OUT_DESC);
+    pub const BLEND_STATE: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_BLEND_STATE);
+    pub const RENDER_TARGET_BLEND: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_RENDER_TARGET_BLEND);
+    pub const DEPTH_STENCIL_STATE: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_DEPTH_STENCIL_STATE);
+    pub const RASTERIZER_STATE: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_RASTERIZER_STATE);
+    pub const DYNAMIC_STATE_BEGIN: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_DYNAMIC_STATE_BEGIN);
+    pub const VIEWPORT: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_VIEWPORT);
+    pub const SCISSOR: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_SCISSOR);
+    pub const PRIMITIVE_TOPOLOGY: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_PRIMITIVE_TOPOLOGY);
+    pub const PATCH_CONTROL_POINTS: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_PATCH_CONTROL_POINTS);
+    pub const PRIMITIVE_STRIP_CUT_INDEX: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_PRIMITIVE_STRIP_CUT_INDEX);
+    pub const BLEND_FACTOR: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_BLEND_FACTOR);
+    pub const STENCIL_REF: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_STENCIL_REF);
+    pub const DEPTH_BOUNDS: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_DEPTH_BOUNDS);
+    pub const SAMPLE_LOCATION: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_SAMPLE_LOCATION);
+    pub const SHADING_RATE: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_SHADING_RATE);
+    pub const COLOR_CLEAR_VALUE: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_COLOR_CLEAR_VALUE);
+    pub const DEPTH_CLEAR_VALUE: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_DEPTH_CLEAR_VALUE);
+    pub const STENCIL_CLEAR_VALUE: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_STENCIL_CLEAR_VALUE);
+    pub const RESOURCE_BINDING_BEGIN: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_RESOURCE_BINDING_BEGIN);
+    pub const VERTEX_BUFFER: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_VERTEX_BUFFER);
+    pub const INDEX_BUFFER: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_INDEX_BUFFER);
+    pub const INDIRECT_ARGS: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_INDIRECT_ARGS);
+    pub const STREAM_OUT_BUFFER: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_STREAM_OUT_BUFFER);
+    pub const INDIRECT_COUNT: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_INDIRECT_COUNT);
+    pub const RENDER_TARGET: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_RENDER_TARGET);
+    pub const DEPTH_STENCIL_TARGET: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_DEPTH_STENCIL_TARGET);
+    pub const SHADING_RATE_IMAGE: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_SHADING_RATE_IMAGE);
+    pub const RESOLVE_TARGET: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_RESOLVE_TARGET);
+    pub const USER_RESOURCE_BINDING: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_USER_RESOURCE_BINDING);
+    pub const COUNT: Self = Self(ffi::RpsSemantic_RPS_SEMANTIC_COUNT);
 }
 
 #[repr(C)]
@@ -166,17 +170,18 @@ pub struct ImageView {
 
 assert_size_and_align!(ImageView, ffi::RpsImageView);
 
-#[repr(C)]
+#[repr(transparent)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
-pub enum ResourceViewComponentMapping {
-    #[default]
-    R = ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_R as _,
-    G = ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_G as _,
-    B = ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_B as _,
-    A = ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_A as _,
-    Zero = ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_ZERO as _,
-    One = ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_ONE as _,
-    Default = ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_DEFAULT as _
+pub struct ResourceViewComponentMapping(u32);
+
+impl ResourceViewComponentMapping {
+    pub const R: Self = Self(ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_R);
+    pub const G: Self = Self(ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_G);
+    pub const B: Self = Self(ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_B);
+    pub const A: Self = Self(ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_A);
+    pub const ZERO: Self = Self(ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_ZERO);
+    pub const ONE: Self = Self(ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_ONE);
+    pub const DEFAULT: Self = Self(ffi::RpsResourceViewComponentMapping_RPS_RESOURCE_VIEW_COMPONENT_MAPPING_DEFAULT);
 }
 
 #[inline]
@@ -215,10 +220,11 @@ pub struct BufferView {
 
 assert_size_and_align!(BufferView, ffi::RpsBufferView);
 
-#[repr(C)]
+#[repr(transparent)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
-pub enum RuntimeBuiltInTypeIds {
-    #[default]
-    ImageView = ffi::RpsRuntimeBuiltInTypeIds_RPS_TYPE_IMAGE_VIEW as _,
-    BufferView = ffi::RpsRuntimeBuiltInTypeIds_RPS_TYPE_BUFFER_VIEW as _
+pub struct RuntimeBuiltInTypeIds(u32);
+
+impl RuntimeBuiltInTypeIds {
+    pub const IMAGE_VIEW: Self = Self(ffi::RpsRuntimeBuiltInTypeIds_RPS_TYPE_IMAGE_VIEW);
+    pub const BUFFER_VIEW: Self = Self(ffi::RpsRuntimeBuiltInTypeIds_RPS_TYPE_BUFFER_VIEW);
 }
