@@ -9,7 +9,7 @@
 
 [![crates][crates-badge]][crates-url]
 [![license][license-badge]][license-url]
-[![vma][vma-badge]][vma-url]
+[![rps][rps-badge]][rps-url]
 [![dependency-status][dependency-badge]][dependency-url]
 
 [crates-badge]: https://img.shields.io/crates/v/render-pipeline-shaders.svg
@@ -18,8 +18,8 @@
 [license-badge]: https://img.shields.io/badge/License-MIT/Apache_2.0-blue.svg
 [license-url]: LICENSE-MIT
 
-[vma-badge]: https://img.shields.io/badge/Render%20Pipeline%20Shaders-1.0%20Beta-orange
-[vma-url]: https://github.com/GPUOpen-LibrariesAndSDKs/RenderPipelineShaders
+[rps-badge]: https://img.shields.io/badge/Render%20Pipeline%20Shaders-1.0%20Beta-orange
+[rps-url]: https://github.com/GPUOpen-LibrariesAndSDKs/RenderPipelineShaders
 
 [dependency-badge]: https://deps.rs/repo/github/projectkml/render-pipeline-shaders-rs/status.svg
 [dependency-url]: https://deps.rs/repo/github/projectkml/render-pipeline-shaders-rs

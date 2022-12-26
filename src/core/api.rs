@@ -59,8 +59,10 @@ pub struct AllocInfo {
 
 assert_size_and_align!(AllocInfo, ffi::RpsAllocInfo);
 
+pub type VaList = ffi::va_list;
+
 pub type PfnPrintf = Option<unsafe extern "C" fn(*mut c_void, *const c_char, ...)>;
-pub type PfnVPrintf = Option<unsafe extern "C" fn(*mut c_void, *const c_char)>; //TODO:
+pub type PfnVPrintf = Option<unsafe extern "C" fn(*mut c_void, *const c_char, VaList)>;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
