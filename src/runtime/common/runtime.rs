@@ -120,7 +120,7 @@ bitflags! {
     }
 }
 
-pub type PfnCmdCallback = Option<unsafe extern "C" fn(*const CmdCallbackContext)>;
+pub type PfnCmdCallback = Option<unsafe extern "C" fn(context: *const CmdCallbackContext)>;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -210,7 +210,7 @@ bitflags! {
     }
 }
 
-pub type PfnRenderGraphBuild = Option<unsafe extern "C" fn(RenderGraphBuilder, *const Constant, u32)>;
+pub type PfnRenderGraphBuild = Option<unsafe extern "C" fn(builder: RenderGraphBuilder, args: *const Constant, num_args: u32)>;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -238,8 +238,8 @@ assert_size_and_align!(RenderGraphUpdateInfo, ffi::RpsRenderGraphUpdateInfo);
 pub const MAX_QUEUED_FRAMES: usize = 16;
 pub const GPU_COMPLETED_FRAME_INDEX_NONE: u64 = u64::MAX;
 
-pub type PfnRenderGraphPhaseRun = Option<unsafe extern "C" fn(RenderGraph, *const RenderGraphUpdateInfo, RenderGraphPhase)>;
-pub type PfnRenderGraphPhaseDestroy = Option<unsafe extern "C" fn(RenderGraphPhase)>;
+pub type PfnRenderGraphPhaseRun = Option<unsafe extern "C" fn(render_graph: RenderGraph, update_info: *const RenderGraphUpdateInfo, phase: RenderGraphPhase)>;
+pub type PfnRenderGraphPhaseDestroy = Option<unsafe extern "C" fn(phase: RenderGraphPhase)>;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
@@ -869,8 +869,10 @@ pub unsafe fn cmd_get_arg(context: *const CmdCallbackContext, arg_index: u32) ->
     *(*context).args.offset(arg_index as _)
 }
 
-pub type PfnAcquireRuntimeCommandBuffer = Option<unsafe extern "C" fn(*mut c_void, u32, u32, *mut RuntimeCommandBuffer, *mut u32)>;
-pub type PfnSubmitRuntimeCommandBuffer = Option<unsafe extern "C" fn(*mut c_void, u32, *const RuntimeCommandBuffer, u32, u32, u32)>;
+pub type PfnAcquireRuntimeCommandBuffer =
+    Option<unsafe extern "C" fn(user_context: *mut c_void, queue_index: u32, num_cmd_buffers: u32, cmd_buffesr: *mut RuntimeCommandBuffer, cmd_buffer_identifiers: *mut u32)>;
+pub type PfnSubmitRuntimeCommandBuffer =
+    Option<unsafe extern "C" fn(user_context: *mut c_void, queue_index: u32, runtime_cmd_bufs: *const RuntimeCommandBuffer, num_runtime_cmd_bufs: u32, wait_id: u32, signal_id: u32)>;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]

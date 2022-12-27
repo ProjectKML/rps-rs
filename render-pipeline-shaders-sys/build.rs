@@ -1,6 +1,6 @@
+use std::{fs, path::Path};
+
 use bindgen::callbacks::ParseCallbacks;
-use std::fs;
-use std::path::Path;
 
 #[derive(Debug)]
 struct BindgenCallbacks;
@@ -45,26 +45,28 @@ fn generate_bindings() {
         .blocklist_type("PFN_vk.*")
         .blocklist_type("__.*")
         .blocklist_type("va_list")
-        .raw_line(r#"pub type va_list = *mut u8;
+        .raw_line(
+            r#"pub type va_list = *mut u8;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct ___rpsl_runtime_procs {
     _unused: [u8; 0]
 }
-        "#)
+        "#
+        )
         .layout_tests(false);
 
-    let bindings = builder
-        .generate()
-        .expect("Failed to generate bindings");
+    let bindings_result = builder.generate();
+
+    //HACK: restore original file
+    fs::write("vendor/RenderPipelineShaders/include/rps/runtime/vk/rps_vk_runtime.h", &rps_vk_runtime_str).unwrap();
+
+    let bindings = bindings_result.expect("Failed to generate bindings");
 
     let bindings_str = bindings.to_string();
 
     fs::create_dir_all("gen").unwrap();
     fs::write(Path::new("gen/bindings.rs"), bindings_str).expect("Failed to write bindings to file");
-
-    //HACK: restore original file
-    fs::write("vendor/RenderPipelineShaders/include/rps/runtime/vk/rps_vk_runtime.h", rps_vk_runtime_str).unwrap();
 }
 
 fn main() {
@@ -91,6 +93,7 @@ fn main() {
         .file("vendor/RenderPipelineShaders/src/runtime/common/rps_render_graph.cpp")
         .file("vendor/RenderPipelineShaders/src/runtime/common/rps_render_graph_builder.cpp")
         .file("vendor/RenderPipelineShaders/src/runtime/common/rps_render_graph_diagnostics.cpp")
+        .file("vendor/RenderPipelineShaders/src/runtime/common/rps_rpsl_host.cpp")
         .file("vendor/RenderPipelineShaders/src/runtime/common/rps_runtime_backend.cpp")
         .file("vendor/RenderPipelineShaders/src/runtime/common/rps_runtime_device.cpp")
         .file("vendor/RenderPipelineShaders/src/runtime/common/rps_subprogram.cpp");
@@ -98,13 +101,16 @@ fn main() {
     #[cfg(feature = "vulkan")]
     {
         build
+            .define("RPS_VK_RUNTIME", "1")
+            .define("RPS_VK_DYNAMIC_VULKAN_FUNCTIONS", "1")
             .file("vendor/RenderPipelineShaders/src/runtime/vk/rps_vk_built_in_nodes.cpp")
             .file("vendor/RenderPipelineShaders/src/runtime/vk/rps_vk_formats.cpp")
             .file("vendor/RenderPipelineShaders/src/runtime/vk/rps_vk_runtime_backend.cpp")
             .file("vendor/RenderPipelineShaders/src/runtime/vk/rps_vk_runtime_device.cpp");
     }
 
-    build.cpp(true)
+    build
+        .cpp(true)
         .flag("-Wno-missing-field-initializers")
         .flag("-Wno-sign-compare")
         .flag("-Wno-unused-function")

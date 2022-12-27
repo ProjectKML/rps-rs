@@ -28,9 +28,9 @@ pub const INDEX_NONE_U32: u32 = u32::MAX;
 pub const INDEX_NONE_I32: i32 = -1;
 pub const NAME_MAX_LEN: usize = 256;
 
-pub type PfnAlloc = Option<unsafe extern "C" fn(*mut c_void, usize, usize) -> *mut c_void>;
-pub type PfnRealloc = Option<unsafe extern "C" fn(*mut c_void, *mut c_void, usize, usize, usize) -> *mut c_void>;
-pub type PfnFree = Option<unsafe extern "C" fn(*mut c_void, *mut c_void)>;
+pub type PfnAlloc = Option<unsafe extern "C" fn(user_context: *mut c_void, size: usize, alignment: usize) -> *mut c_void>;
+pub type PfnRealloc = Option<unsafe extern "C" fn(user_context: *mut c_void, old_bufer: *mut c_void, old_size: usize, new_size: usize, alignment: usize) -> *mut c_void>;
+pub type PfnFree = Option<unsafe extern "C" fn(user_context: *mut c_void, buffer: *mut c_void)>;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -61,8 +61,8 @@ assert_size_and_align!(AllocInfo, ffi::RpsAllocInfo);
 
 pub type VaList = ffi::va_list;
 
-pub type PfnPrintf = Option<unsafe extern "C" fn(*mut c_void, *const c_char, ...)>;
-pub type PfnVPrintf = Option<unsafe extern "C" fn(*mut c_void, *const c_char, VaList)>;
+pub type PfnPrintf = Option<unsafe extern "C" fn(context: *mut c_void, format: *const c_char, ...)>;
+pub type PfnVPrintf = Option<unsafe extern "C" fn(context: *mut c_void, format: *const c_char, vl: VaList)>;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -81,7 +81,7 @@ impl Default for Printer {
 
 assert_size_and_align!(Printer, ffi::RpsPrinter);
 
-pub type PfnRandomUniformInt = Option<unsafe extern "C" fn(*mut c_void, i32, i32)>;
+pub type PfnRandomUniformInt = Option<unsafe extern "C" fn(context: *mut c_void, min_value: i32, max_value: i32)>;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -101,7 +101,7 @@ assert_size_and_align!(RandomNumberGenerator, ffi::RpsRandomNumberGenerator);
 
 define_handle!(Device);
 
-pub type PfnDeviceOnDestroy = Option<unsafe extern "C" fn(Device)>;
+pub type PfnDeviceOnDestroy = Option<unsafe extern "C" fn(device: Device)>;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
@@ -233,11 +233,41 @@ define_handle!(DebugInfo);
 
 pub type RpslEntryCallFlags = Flags32;
 
-pub type PfnRpslEntry = Option<unsafe extern "C" fn(u32, *const *const c_void, RpslEntryCallFlags)>;
+pub type PfnRpslEntry = Option<unsafe extern "C" fn(num_args: u32, args: *const *const c_void, flags: RpslEntryCallFlags)>;
 
 define_handle!(RpslEntry);
 
-//TODO: macros
+pub(crate) use paste::paste;
+
+#[macro_export]
+macro_rules! entry_ref {
+    ($module_name: ident, $entry_name: ident) => {
+        crate::paste! {
+            [<rpsl_M_ $module_name _E_ $entry_name>]
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! entry_name {
+    ($module_name: ident, $entry_name: ident) => {
+        concat!("rpsl_M_", stringify!($module_name), "_E_", stringify!($entry_name))
+    };
+}
+
+#[macro_export]
+macro_rules! declare_rpsl_entry {
+    ($module_name: ident, $entry_name: ident) => {
+        extern "C" {
+            crate::paste! {
+                fn [<rpsl_M_ $module_name _E_ $entry_name>](num_args: u32, args: *const *const ::std::ffi::c_void, flags: crate::RpslEntryCallFlags);
+            }
+        }
+    };
+}
+
+pub const ENTRY_TABLE_NAME: &str = "rpsl_M_entry_tbl";
+pub const MODULE_ID_NAME: &str = "rpsl_M_module_id";
 
 pub type PfnRpslDynLibInit = ffi::PFN_rpslDynLibInit;
 
@@ -253,11 +283,11 @@ pub unsafe fn make_rpsl_entry_name(buf: *mut c_char, buf_size: usize, module_nam
 
 define_handle!(JITModule);
 
-pub type PfnJITStartup = unsafe extern "C" fn(i32, *const *const c_char) -> i32;
+pub type PfnJITStartup = unsafe extern "C" fn(argc: i32, args: *const *const c_char) -> i32;
 pub type PfnJITShutdown = unsafe extern "C" fn();
-pub type PfnJITLoad = unsafe extern "C" fn(*const c_char, *mut JITModule) -> i32;
-pub type PfnJITUnload = unsafe extern "C" fn(JITModule);
-pub type PfnJITGetEntryPoint = unsafe extern "C" fn(JITModule, *const c_char, *mut u64) -> i32;
+pub type PfnJITLoad = unsafe extern "C" fn(name: *const c_char, jit_module: *mut JITModule) -> i32;
+pub type PfnJITUnload = unsafe extern "C" fn(jit_module: JITModule);
+pub type PfnJITGetEntryPoint = unsafe extern "C" fn(jit_module: JITModule, symbol_name: *const c_char, entry_name: *mut u64) -> i32;
 
 pub const JIT_PROC_NAME_STARTUP: &'static [u8] = b"RpsJITStartup\0";
 pub const JIT_PROC_NAME_SHUTDOWN: &'static [u8] = b"RpsJITShutdown\0";

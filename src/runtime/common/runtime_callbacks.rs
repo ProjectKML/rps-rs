@@ -169,25 +169,26 @@ impl Default for RuntimeOpSetDebugNameArgs {
 
 assert_size_and_align!(RuntimeOpSetDebugNameArgs, ffi::RpsRuntimeOpSetDebugNameArgs);
 
-pub type PfnRuntimeDeviceBuildRenderGraphPhases = Option<unsafe extern "C" fn(*const c_void, RenderGraph, *const *const RenderGraphPhaseInfo, *const u32) -> Result>;
+pub type PfnRuntimeDeviceBuildRenderGraphPhases =
+    Option<unsafe extern "C" fn(user_context: *mut c_void, render_graph: RenderGraph, phase_info: *const *const RenderGraphPhaseInfo, num_phaeses: *mut u32) -> Result>;
 
-pub type PfnRuntimeDeviceDestroy = Option<unsafe extern "C" fn(*const c_void)>;
+pub type PfnRuntimeDeviceDestroy = Option<unsafe extern "C" fn(user_context: *mut c_void)>;
 
-pub type PfnRuntimeCreateHeap = Option<unsafe extern "C" fn(*const c_void, *const RuntimeOpCreateHeapArgs) -> Result>;
+pub type PfnRuntimeCreateHeap = Option<unsafe extern "C" fn(user_context: *mut c_void, args: *const RuntimeOpCreateHeapArgs) -> Result>;
 
-pub type PfnRuntimeDestroyHeap = Option<unsafe extern "C" fn(*const c_void, *const RuntimeOpDestroyHeapArgs)>;
+pub type PfnRuntimeDestroyHeap = Option<unsafe extern "C" fn(user_context: *mut c_void, args: *const RuntimeOpDestroyHeapArgs)>;
 
-pub type PfnRuntimeCreateResource = Option<unsafe extern "C" fn(*const c_void, *const RuntimeOpCreateResourceArgs) -> Result>;
+pub type PfnRuntimeCreateResource = Option<unsafe extern "C" fn(user_context: *mut c_void, args: *const RuntimeOpCreateResourceArgs) -> Result>;
 
-pub type PfnRuntimeDestroyResource = Option<unsafe extern "C" fn(*const c_void, *const RuntimeOpDestroyResourceArgs)>;
+pub type PfnRuntimeDestroyResource = Option<unsafe extern "C" fn(user_context: *mut c_void, args: *const RuntimeOpDestroyResourceArgs)>;
 
-pub type PfnRuntimeOpCreateNodeUserResources = Option<unsafe extern "C" fn(*const c_void, *const RuntimeOpCreateNodeUserResourcesArgs) -> Result>;
+pub type PfnRuntimeOpCreateNodeUserResources = Option<unsafe extern "C" fn(user_context: *mut c_void, args: *const RuntimeOpCreateNodeUserResourcesArgs) -> Result>;
 
-pub type PfnRuntimeOpDestroyNodeUserResources = Option<unsafe extern "C" fn(*const c_void)>;
+pub type PfnRuntimeOpDestroyNodeUserResources = Option<unsafe extern "C" fn(user_context: *mut c_void)>;
 
-pub type PfnRuntimeOpRecordDebugMarker = Option<unsafe extern "C" fn(*const c_void, *const RuntimeOpRecordDebugMarkerArgs)>;
+pub type PfnRuntimeOpRecordDebugMarker = Option<unsafe extern "C" fn(user_context: *mut c_void, args: *const RuntimeOpRecordDebugMarkerArgs)>;
 
-pub type PfnRuntimeOpSetDebugName = Option<unsafe extern "C" fn(*const c_void, *const RuntimeOpSetDebugNameArgs)>;
+pub type PfnRuntimeOpSetDebugName = Option<unsafe extern "C" fn(user_context: *mut c_void, args: *const RuntimeOpSetDebugNameArgs)>;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]

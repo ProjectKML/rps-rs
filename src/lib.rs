@@ -1,3 +1,4 @@
+#![feature(concat_idents)]
 #![allow(clippy::missing_safety_doc)]
 
 mod core;
