@@ -348,7 +348,7 @@ pub unsafe fn null_runtime_device_create(create_info: *const DeviceCreateInfo) -
 #[derive(Clone, Copy, Debug)]
 pub struct ProgramCreateInfo {
     pub signature_desc: *const RenderGraphSignatureDesc,
-    pub rps_entry_point: RpslEntry,
+    pub rpsl_entry_point: RpslEntry,
     pub default_node_callback: CmdCallback
 }
 
@@ -609,10 +609,8 @@ pub unsafe fn render_graph_get_batch_layout(render_graph: RenderGraph) -> RpsRes
 }
 
 #[inline]
-pub unsafe fn render_graph_record_commands(render_graph: RenderGraph) -> RpsResult<RenderGraphRecordCommandInfo> {
-    let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsRenderGraphRecordCommands(render_graph.into_raw().cast(), &mut result as *mut _ as *mut _))?;
-    Ok(result.assume_init())
+pub unsafe fn render_graph_record_commands(render_graph: RenderGraph, record_info: *const RenderGraphRecordCommandInfo) -> RpsResult<()> {
+    result_from_ffi(ffi::rpsRenderGraphRecordCommands(render_graph.into_raw().cast(), record_info.cast()))
 }
 
 pub const CMD_ID_INVALID: u32 = INDEX_NONE_U32;

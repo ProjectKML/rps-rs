@@ -237,12 +237,19 @@ pub type PfnRpslEntry = Option<unsafe extern "C" fn(num_args: u32, args: *const 
 
 define_handle!(RpslEntry);
 
-pub(crate) use paste::paste;
+impl Into<PfnRpslEntry> for RpslEntry {
+    #[inline]
+    fn into(self) -> PfnRpslEntry {
+        unsafe { mem::transmute(self) }
+    }
+}
+
+pub use paste::paste;
 
 #[macro_export]
 macro_rules! entry_ref {
     ($module_name: ident, $entry_name: ident) => {
-        crate::paste! {
+        $crate::paste! {
             [<rpsl_M_ $module_name _E_ $entry_name>]
         }
     };
@@ -259,8 +266,9 @@ macro_rules! entry_name {
 macro_rules! declare_rpsl_entry {
     ($module_name: ident, $entry_name: ident) => {
         extern "C" {
-            crate::paste! {
-                fn [<rpsl_M_ $module_name _E_ $entry_name>](num_args: u32, args: *const *const ::std::ffi::c_void, flags: crate::RpslEntryCallFlags);
+            $crate::paste! {
+                #[no_mangle]
+                static [<rpsl_M_ $module_name _E_ $entry_name>]: $crate::RpslEntry;
             }
         }
     };
