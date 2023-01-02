@@ -9,11 +9,11 @@ use crate::{
     core::Result,
     ffi,
     utils::{assert_size_and_align, define_handle},
-    AccessAttr, Bool, ClearValue, Format, GpuMemoryRequirement, HeapPlacement, RenderGraph, RenderGraphPhaseInfo, ResourceDesc, ResourceId, ResourceType, RuntimeCommandBuffer, Variable
+    AccessAttr, Bool, ClearValue, Format, GpuMemoryRequirement, HeapPlacement, RenderGraph, RenderGraphPhaseInfo, ResourceDesc, ResourceId, ResourceType, RuntimeCommandBuffer,
+    RuntimeResource, Variable
 };
 
 define_handle!(RuntimeHeap);
-define_handle!(RuntimeResource);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
