@@ -1,4 +1,4 @@
-use std::{fs, path::Path};
+use std::{env, fs, path::Path};
 
 use bindgen::callbacks::ParseCallbacks;
 
@@ -43,17 +43,8 @@ fn generate_bindings() {
         .parse_callbacks(Box::new(BindgenCallbacks))
         .blocklist_type("Vk.*")
         .blocklist_type("PFN_vk.*")
-        .blocklist_type("__.*")
         .blocklist_type("va_list")
-        .raw_line(
-            r#"pub type va_list = *mut u8;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct ___rpsl_runtime_procs {
-    _unused: [u8; 0]
-}
-        "#
-        )
+        .raw_line("pub type va_list = *mut u8;")
         .layout_tests(false);
 
     let bindings_result = builder.generate();
@@ -79,6 +70,7 @@ fn main() {
     let mut build = cc::Build::new();
     build
         .cpp(true)
+        .include("vendor/Vulkan-Headers/include")
         .include("vendor/RenderPipelineShaders/include")
         .include("vendor/RenderPipelineShaders/src")
         .file("vendor/RenderPipelineShaders/src/core/rps_core.cpp")
@@ -98,6 +90,30 @@ fn main() {
         .file("vendor/RenderPipelineShaders/src/runtime/common/rps_runtime_device.cpp")
         .file("vendor/RenderPipelineShaders/src/runtime/common/rps_subprogram.cpp");
 
+    let target = env::var("TARGET").unwrap();
+
+    if target.contains("gnu") || target.contains("darwin") {
+        build
+            .flag("-Wno-missing-field-initializers")
+            .flag("-Wno-sign-compare")
+            .flag("-Wno-unused-function")
+            .flag("-Wno-unused-parameter")
+            .flag("-Wno-unused-but-set-variable")
+            .flag("-Wno-unused-private-field")
+            .flag("-Wno-unused-variable")
+            .flag("-Wno-extra");
+    } else if target.contains("msvc") {
+        build
+            .flag("/wd4100")
+            .flag("/wd4189")
+            .flag("/wd4201")
+            .flag("/wd4244")
+            .flag("/wd4389")
+            .flag("/wd4463")
+            .flag("/wd4205")
+            .flag("/wd4505");
+    }
+
     #[cfg(feature = "vulkan")]
     {
         build
@@ -109,17 +125,7 @@ fn main() {
             .file("vendor/RenderPipelineShaders/src/runtime/vk/rps_vk_runtime_device.cpp");
     }
 
-    build
-        .cpp(true)
-        .flag("-Wno-missing-field-initializers")
-        .flag("-Wno-sign-compare")
-        .flag("-Wno-unused-function")
-        .flag("-Wno-unused-parameter")
-        .flag("-Wno-unused-but-set-variable")
-        .flag("-Wno-unused-private-field")
-        .flag("-Wno-unused-variable");
-
-    build.compile("render_pipeline_shaders_sys_cc");
+    build.cpp(true).compile("render_pipeline_shaders_sys_cc");
 
     cc::Build::new()
         .include("vendor/RenderPipelineShaders/include")

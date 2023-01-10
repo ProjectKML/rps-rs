@@ -392,13 +392,13 @@ pub unsafe fn program_bind_node_subprogram(program: Subprogram, name: *const c_c
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
-pub struct RenderGraphCreateInfoScheduleInfo {
+pub struct RenderGraphCreateScheduleInfo {
     pub schedule_flags: ScheduleFlags,
     pub num_queues: u32,
     pub queue_infos: *const QueueFlags
 }
 
-impl Default for RenderGraphCreateInfoScheduleInfo {
+impl Default for RenderGraphCreateScheduleInfo {
     #[inline]
     fn default() -> Self {
         unsafe { mem::zeroed() }
@@ -407,12 +407,12 @@ impl Default for RenderGraphCreateInfoScheduleInfo {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
-pub struct RenderGraphCreateInfoMemoryInfo {
+pub struct RenderGraphCreateMemoryInfo {
     pub num_heaps: u32,
     pub heap_budget_mibs: *const u32
 }
 
-impl Default for RenderGraphCreateInfoMemoryInfo {
+impl Default for RenderGraphCreateMemoryInfo {
     #[inline]
     fn default() -> Self {
         unsafe { mem::zeroed() }
@@ -422,8 +422,8 @@ impl Default for RenderGraphCreateInfoMemoryInfo {
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub struct RenderGraphCreateInfo {
-    pub schedule_info: RenderGraphCreateInfoScheduleInfo,
-    pub memory_info: RenderGraphCreateInfoMemoryInfo,
+    pub schedule_info: RenderGraphCreateScheduleInfo,
+    pub memory_info: RenderGraphCreateMemoryInfo,
     pub main_entry_create_info: ProgramCreateInfo,
     pub render_graph_flags: RenderGraphFlags,
     pub num_phases: u32,
