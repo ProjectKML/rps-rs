@@ -94,6 +94,7 @@ fn main() {
 
     if target.contains("gnu") || target.contains("darwin") {
         build
+            .flag("-std=c++17")
             .flag("-Wno-missing-field-initializers")
             .flag("-Wno-sign-compare")
             .flag("-Wno-unused-function")
