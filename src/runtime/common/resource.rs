@@ -12,12 +12,12 @@ pub type ResourceId = u32;
 pub struct ResourceType(u32);
 
 impl ResourceType {
-    pub const UNKNOWN: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_UNKNOWN);
-    pub const BUFFER: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_BUFFER);
-    pub const IMAGE_1D: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_IMAGE_1D);
-    pub const IMAGE_2D: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_IMAGE_2D);
-    pub const IMAGE_3D: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_IMAGE_3D);
-    pub const COUNT: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_COUNT);
+    pub const UNKNOWN: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_UNKNOWN as _);
+    pub const BUFFER: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_BUFFER as _);
+    pub const IMAGE_1D: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_IMAGE_1D as _);
+    pub const IMAGE_2D: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_IMAGE_2D as _);
+    pub const IMAGE_3D: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_IMAGE_3D as _);
+    pub const COUNT: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_COUNT as _);
 }
 
 bitflags! {

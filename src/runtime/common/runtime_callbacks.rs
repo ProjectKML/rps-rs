@@ -117,9 +117,9 @@ assert_size_and_align!(RuntimeOpCreateNodeUserResourcesArgs, ffi::RpsRuntimeOpCr
 pub struct RuntimeDebugMarkerMode(u32);
 
 impl RuntimeDebugMarkerMode {
-    pub const BEGIN: Self = Self(ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_BEGIN);
-    pub const LABEL: Self = Self(ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_LABEL);
-    pub const END: Self = Self(ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_END);
+    pub const BEGIN: Self = Self(ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_BEGIN as _);
+    pub const LABEL: Self = Self(ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_LABEL as _);
+    pub const END: Self = Self(ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_END as _);
 }
 
 bitflags! {

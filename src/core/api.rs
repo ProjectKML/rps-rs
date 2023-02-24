@@ -180,20 +180,20 @@ impl TypeInfo {
 pub struct BuiltInTypeIds(u32);
 
 impl BuiltInTypeIds {
-    pub const BOOL: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_BOOL);
-    pub const INT8: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT8);
-    pub const UINT8: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT8);
-    pub const INT16: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT16);
-    pub const UINT16: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT16);
-    pub const INT32: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT32);
-    pub const UINT32: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT32);
-    pub const INT64: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT64);
-    pub const UINT64: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT64);
-    pub const FLOAT32: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_FLOAT32);
-    pub const FLOAT64: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_FLOAT64);
-    pub const MAX_VALUE: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_MAX_VALUE);
-    pub const RUNTIME_DEFINED_BEGIN: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_RUNTIME_DEFINED_BEGIN);
-    pub const USER_DEFINED_BEGIN: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_USER_DEFINED_BEGIN);
+    pub const BOOL: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_BOOL as _);
+    pub const INT8: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT8 as _);
+    pub const UINT8: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT8 as _);
+    pub const INT16: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT16 as _);
+    pub const UINT16: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT16 as _);
+    pub const INT32: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT32 as _);
+    pub const UINT32: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT32 as _);
+    pub const INT64: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT64 as _);
+    pub const UINT64: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT64 as _);
+    pub const FLOAT32: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_FLOAT32 as _);
+    pub const FLOAT64: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_FLOAT64 as _);
+    pub const MAX_VALUE: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_MAX_VALUE as _);
+    pub const RUNTIME_DEFINED_BEGIN: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_RUNTIME_DEFINED_BEGIN as _);
+    pub const USER_DEFINED_BEGIN: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_USER_DEFINED_BEGIN as _);
 }
 
 pub type TypeId = i32;
