@@ -1,9 +1,6 @@
 [submodule "render-pipeline-shaders-sys/vendor/Vulkan-Docs"]
 	path = render-pipeline-shaders-sys/vendor/Vulkan-Docs
 	url = https://github.com/KhronosGroup/Vulkan-Docs
-[submodule "render-pipeline-shaders-sys/vendor/RenderPipelineShaders"]
-	path = render-pipeline-shaders-sys/vendor/RenderPipelineShaders
-	url = https://github.com/BeastLe9enD/RenderPipelineShaders/
 [submodule "render-pipeline-shaders-sys/vendor/Vulkan-Headers"]
 	path = render-pipeline-shaders-sys/vendor/Vulkan-Headers
 	url = https://github.com/KhronosGroup/Vulkan-Headers/
