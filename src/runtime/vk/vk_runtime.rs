@@ -100,10 +100,10 @@ impl VKFunctions {
 pub struct VKRuntimeDeviceCreateInfo {
     pub device_create_info: *const DeviceCreateInfo,
     pub runtime_create_info: *const RuntimeDeviceCreateInfo,
-    pub vulkan_functions: *const VKFunctions,
     pub vk_device: vk::Device,
     pub vk_physical_device: vk::PhysicalDevice,
-    pub flags: VKRuntimeFlags
+    pub flags: VKRuntimeFlags,
+    pub vk_functions: *const VKFunctions
 }
 
 impl Default for VKRuntimeDeviceCreateInfo {

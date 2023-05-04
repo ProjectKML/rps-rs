@@ -62,7 +62,7 @@ pub struct RuntimeOpCreateResourceArgs {
     pub all_accesses: AccessAttr,
     pub initial_access: AccessAttr,
     pub num_mutable_formats: u32,
-    pub formats: *const Format,
+    pub mutable_formats: *mut Format,
     pub buffer_formatted_write: Bool,
     pub buffer_formatted_read: Bool,
     pub runtime_resource: *mut RuntimeResource

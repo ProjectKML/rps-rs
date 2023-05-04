@@ -131,6 +131,18 @@ pub unsafe fn device_get_private_data(device: Device) -> *const c_void {
     ffi::rpsDeviceGetPrivateData(device.into_raw() as _)
 }
 
+#[repr(transparent)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+pub struct DiagLogLevel(u32);
+
+impl DiagLogLevel {
+    pub const INFO: Self = Self(ffi::RpsDiagLogLevel_RPS_DIAG_INFO as _);
+    pub const WARNING: Self = Self(ffi::RpsDiagLogLevel_RPS_DIAG_WARNING as _);
+    pub const ERROR: Self = Self(ffi::RpsDiagLogLevel_RPS_DIAG_ERROR as _);
+    pub const FATAL: Self = Self(ffi::RpsDiagLogLevel_RPS_DIAG_FATAL as _);
+    pub const COUNT: Self = Self(ffi::RpsDiagLogLevel_RPS_DIAG_COUNT as _);
+}
+
 #[inline]
 pub unsafe fn set_global_debug_printer(printer: *const Printer) {
     ffi::rpsSetGlobalDebugPrinter(printer.cast());
@@ -139,6 +151,11 @@ pub unsafe fn set_global_debug_printer(printer: *const Printer) {
 #[inline]
 pub unsafe fn get_global_debug_printer() -> *const Printer {
     ffi::rpsGetGlobalDebugPrinter().cast()
+}
+
+#[inline]
+pub unsafe fn set_global_debug_printer_log_level(min_log_level: DiagLogLevel) {
+    ffi::rpsSetGlobalDebugPrinterLogLevel(mem::transmute(min_log_level))
 }
 
 #[repr(C)]
@@ -237,10 +254,10 @@ pub type PfnRpslEntry = Option<unsafe extern "C" fn(num_args: u32, args: *const 
 
 define_handle!(RpslEntry);
 
-impl Into<PfnRpslEntry> for RpslEntry {
+impl From<RpslEntry> for PfnRpslEntry {
     #[inline]
-    fn into(self) -> PfnRpslEntry {
-        unsafe { mem::transmute(self) }
+    fn from(val: RpslEntry) -> Self {
+        unsafe { mem::transmute(val) }
     }
 }
 
@@ -297,11 +314,11 @@ pub type PfnJITLoad = unsafe extern "C" fn(name: *const c_char, jit_module: *mut
 pub type PfnJITUnload = unsafe extern "C" fn(jit_module: JITModule);
 pub type PfnJITGetEntryPoint = unsafe extern "C" fn(jit_module: JITModule, symbol_name: *const c_char, entry_name: *mut u64) -> i32;
 
-pub const JIT_PROC_NAME_STARTUP: &'static [u8] = b"RpsJITStartup\0";
-pub const JIT_PROC_NAME_SHUTDOWN: &'static [u8] = b"RpsJITShutdown\0";
-pub const JIT_PROC_NAME_LOAD: &'static [u8] = b"RpsJITLoad\0";
-pub const JIT_PROC_NAME_UNLOAD: &'static [u8] = b"RpsJITUnload\0";
-pub const JIT_PROC_NAME_GETENTRYPOINT: &'static [u8] = b"RpsJITGetEntryPoint\0";
+pub const JIT_PROC_NAME_STARTUP: &[u8] = b"RpsJITStartup\0";
+pub const JIT_PROC_NAME_SHUTDOWN: &[u8] = b"RpsJITShutdown\0";
+pub const JIT_PROC_NAME_LOAD: &[u8] = b"RpsJITLoad\0";
+pub const JIT_PROC_NAME_UNLOAD: &[u8] = b"RpsJITUnload\0";
+pub const JIT_PROC_NAME_GETENTRYPOINT: &[u8] = b"RpsJITGetEntryPoint\0";
 
 #[cfg(target_os = "windows")]
 fn jit_lib_name() -> &'static Path {
@@ -340,7 +357,7 @@ impl JITLibrary {
             jit_lib_name().to_owned()
         };
 
-        let library = unsafe { Library::new(&total_path) }?;
+        let library = unsafe { Library::new(total_path) }?;
 
         unsafe {
             let jit_startup = mem::transmute(library.get::<PfnJITStartup>(JIT_PROC_NAME_STARTUP)?.into_raw().into_raw());

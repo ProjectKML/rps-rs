@@ -31,11 +31,14 @@ bitflags! {
         const CPU_READ = ffi::RpsAccessFlagBits_RPS_ACCESS_CPU_READ_BIT as _;
         const CPU_WRITE = ffi::RpsAccessFlagBits_RPS_ACCESS_CPU_WRITE_BIT as _;
 
-        const RENDER_PASS = ffi::RpsAccessFlagBits_RPS_ACCESS_RENDER_PASS as _;
+        const DISCARD_DATA_BEFORE = ffi::RpsAccessFlagBits_RPS_ACCESS_DISCARD_DATA_BEFORE_BIT as _;
+        const DISCARD_DATA_AFTER = ffi::RpsAccessFlagBits_RPS_ACCESS_DISCARD_DATA_AFTER_BIT as _;
+        const STENCIL_DISCARD_DATA_BEFORE = ffi::RpsAccessFlagBits_RPS_ACCESS_STENCIL_DISCARD_DATA_BEFORE_BIT as _;
+        const STENCIL_DISCARD_DATA_AFTER = ffi::RpsAccessFlagBits_RPS_ACCESS_STENCIL_DISCARD_DATA_AFTER_BIT as _;
         const BEFORE = ffi::RpsAccessFlagBits_RPS_ACCESS_BEFORE_BIT as _;
         const AFTER = ffi::RpsAccessFlagBits_RPS_ACCESS_DEPTH as _;
         const CLEAR = ffi::RpsAccessFlagBits_RPS_ACCESS_CLEAR_BIT as _;
-        const DISCARD_OLD_DATA = ffi::RpsAccessFlagBits_RPS_ACCESS_DISCARD_OLD_DATA_BIT as _;
+        const RENDER_PASS = ffi::RpsAccessFlagBits_RPS_ACCESS_RENDER_PASS as _;
         const RELAXED_ORDER = ffi::RpsAccessFlagBits_RPS_ACCESS_RELAXED_ORDER_BIT as _;
         const NO_VIEW = ffi::RpsAccessFlagBits_RPS_ACCESS_NO_VIEW_BIT as _;
 

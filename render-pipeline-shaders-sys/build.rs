@@ -119,7 +119,7 @@ fn main() {
     {
         build
             .define("RPS_VK_RUNTIME", "1")
-            .define("RPS_VK_DYNAMIC_VULKAN_FUNCTIONS", "1")
+            .define("RPS_VK_DYNAMIC_LOADING", "1")
             .file("vendor/RenderPipelineShaders/src/runtime/vk/rps_vk_built_in_nodes.cpp")
             .file("vendor/RenderPipelineShaders/src/runtime/vk/rps_vk_formats.cpp")
             .file("vendor/RenderPipelineShaders/src/runtime/vk/rps_vk_runtime_backend.cpp")
@@ -127,12 +127,6 @@ fn main() {
     }
 
     build.cpp(true).compile("render_pipeline_shaders_sys_cc");
-
-    cc::Build::new()
-        .include("vendor/RenderPipelineShaders/include")
-        .include("vendor/RenderPipelineShaders/src")
-        .file("vendor/RenderPipelineShaders/src/runtime/common/rps_rpsl_host.c")
-        .compile("render_pipeline_shaders_sys_rpsl_host_cc");
 
     generate_bindings();
 }

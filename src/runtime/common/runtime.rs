@@ -79,6 +79,7 @@ bitflags! {
         const NONE = ffi::RpsRenderGraphFlagBits_RPS_RENDER_GRAPH_FLAG_NONE as _;
         const DISALLOW_UNBOUND_NODES = ffi::RpsRenderGraphFlagBits_RPS_RENDER_GRAPH_DISALLOW_UNBOUND_NODES_BIT as _;
         const NO_GPU_MEMORY_ALIASING = ffi::RpsRenderGraphFlagBits_RPS_RENDER_GRAPH_NO_GPU_MEMORY_ALIASING as _;
+        const NO_LIFETIME_ANALYSIS = ffi::RpsRenderGraphFlagBits_RPS_RENDER_GRAPH_NO_LIFETIME_ANALYSIS as _;
     }
 }
 
@@ -113,10 +114,10 @@ bitflags! {
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct CmdCallbackFlags: u32 {
         const NONE = ffi::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_FLAG_NONE as _;
-        const MULTI_THREADED = ffi::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_MULTI_THREADED_BIT as _;
         const CUSTOM_RENDER_TARGETS = ffi::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_CUSTOM_RENDER_TARGETS_BIT as _;
-        const CUSTOM_VIEWPORT = ffi::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_CUSTOM_VIEWPORT_BIT as _;
+        const CUSTOM_VIEWPORT_SCISSOR = ffi::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_CUSTOM_VIEWPORT_SCISSOR_BIT as _;
         const CUSTOM_STATE_SETUP = ffi::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_CUSTOM_STATE_SETUP_BIT as _;
+        const CUSTOM_ALL = ffi::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_CUSTOM_ALL as _;
     }
 }
 
@@ -482,8 +483,8 @@ pub unsafe fn render_graph_get_param_resource_id(render_graph_builder: RenderGra
 }
 
 #[inline]
-pub unsafe fn render_graph_declare_resource(render_graph_builder: RenderGraphBuilder, name: *const c_char, local_id: ResourceId, arg: Variable) -> ResourceId {
-    ffi::rpsRenderGraphDeclareResource(render_graph_builder.into_raw().cast(), name, local_id, arg)
+pub unsafe fn render_graph_declare_resource(render_graph_builder: RenderGraphBuilder, name: *const c_char, local_id: ResourceId, desc: Variable) -> ResourceId {
+    ffi::rpsRenderGraphDeclareResource(render_graph_builder.into_raw().cast(), name, local_id, desc)
 }
 
 #[inline]
@@ -493,6 +494,7 @@ pub unsafe fn render_graph_add_node(
     user_tag: u32,
     callback: PfnCmdCallback,
     callback_user_context: *mut c_void,
+    callback_flags: CmdCallbackFlags,
     args: *const Variable,
     num_args: u32
 ) -> NodeId {
@@ -502,6 +504,7 @@ pub unsafe fn render_graph_add_node(
         user_tag,
         mem::transmute(callback),
         callback_user_context,
+        mem::transmute(callback_flags),
         args,
         num_args
     )
@@ -794,8 +797,8 @@ pub unsafe fn cmd_clone_context(context: *const CmdCallbackContext, cmd_buffer_f
 }
 
 #[inline]
-pub unsafe fn cmd_begin_render_pass(context: *const CmdCallbackContext, flags: RuntimeRenderPassFlags) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsCmdBeginRenderPass(context.cast(), mem::transmute(flags)))
+pub unsafe fn cmd_begin_render_pass(context: *const CmdCallbackContext, begin_info: *const CmdRenderPassBeginInfo) -> RpsResult<()> {
+    result_from_ffi(ffi::rpsCmdBeginRenderPass(context.cast(), begin_info.cast()))
 }
 
 #[inline]
