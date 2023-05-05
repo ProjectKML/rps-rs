@@ -31,7 +31,42 @@
 This library is still experimental and should not be used for anything serious, yet. It is also not yet published to crates.io.
 
 ```Rust
-panic!("The example is not yet available");
+let device_create_info = rps::DeviceCreateInfo {
+    allocator: rps::Allocator {
+        pfn_alloc: Some(alloc),
+        pfn_realloc: Some(realloc),
+        pfn_free: Some(free),
+        ..Default::default()
+    },
+    printer: rps::Printer {
+        pfn_printf: Some(printf),
+        pfn_vprintf: Some(vprintf),
+        ..Default::default()
+    },
+    ..Default::default()
+};
+
+let runtime_create_info = rps::RuntimeDeviceCreateInfo {
+    callbacks: rps::RuntimeCallbacks {
+        pfn_record_debug_marker: Some(record_debug_marker),
+        pfn_set_debug_name: Some(set_debug_name),
+        ..Default::default()
+    },
+    ..Default::default()
+};
+
+let vk_functions = rps::VKFunctions::new(device.instance().loader(), device.loader());
+
+let runtime_device_create_info = rps::VKRuntimeDeviceCreateInfo {
+    device_create_info: &device_create_info,
+    runtime_create_info: &runtime_create_info,
+    vk_device: *device,
+    vk_physical_device: *device.physical_device(),
+    flags: rps::VKRuntimeFlags::DONT_FLIP_VIEWPORT,
+    vk_functions: &vk_functions,
+};
+
+let rps_device = unsafe { rps::vk_runtime_device_create(&runtime_device_create_info) }?;
 ```
 
 ### Credits
