@@ -1,6 +1,7 @@
 use std::{env, fs, path::Path};
 
 use bindgen::callbacks::ParseCallbacks;
+use bindgen::Formatter;
 
 #[derive(Debug)]
 struct BindgenCallbacks;
@@ -35,7 +36,7 @@ fn generate_bindings() {
         .clang_arg("-I./vendor/Vulkan-Headers/include")
         .clang_arg("-I./vendor/RenderPipelineShaders/include")
         .header("vendor/RenderPipelineShaders/include/rps/rps.h")
-        .rustfmt_bindings(true)
+        .formatter(Formatter::Rustfmt)
         .size_t_is_usize(true)
         .allowlist_function("rps.*")
         .allowlist_function("PFN_rps.*")

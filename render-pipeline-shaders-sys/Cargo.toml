@@ -7,8 +7,8 @@ edition = "2021"
 ash = { git = "https://github.com/projectkml/ash" }
 
 [build-dependencies]
-bindgen = "0.63.0"
-cc = "1.0.78"
+bindgen = "0.65.1"
+cc = "1.0.79"
 
 [features]
 d3d11 = []
