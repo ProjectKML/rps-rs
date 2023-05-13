@@ -41,6 +41,13 @@ impl Result {
     pub const CODE_COUNT: Self = Self(ffi::RpsResult_RPS_RESULT_CODE_COUNT);
 }
 
+impl Result {
+    #[inline]
+    pub fn into_raw(self) -> i32 {
+        self.0
+    }
+}
+
 impl Debug for Result {
     #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {

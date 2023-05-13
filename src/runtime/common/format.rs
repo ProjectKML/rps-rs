@@ -126,6 +126,16 @@ impl Format {
 
 impl Format {
     #[inline]
+    pub fn from_raw(raw: u32) -> Self {
+        Self(raw)
+    }
+
+    #[inline]
+    pub fn into_raw(self) -> u32 {
+        self.0
+    }
+
+    #[inline]
     pub fn block_compressed(self) -> bool {
         unsafe { ffi::rpsFormatIsBlockCompressed(mem::transmute(self)) == TRUE }
     }

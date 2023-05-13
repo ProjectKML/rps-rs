@@ -20,6 +20,13 @@ impl ResourceType {
     pub const COUNT: Self = Self(ffi::RpsResourceType_RPS_RESOURCE_TYPE_COUNT as _);
 }
 
+impl ResourceType {
+    #[inline]
+    pub fn from_raw(raw: u32) -> Self {
+        Self(raw)
+    }
+}
+
 bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
