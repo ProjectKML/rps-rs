@@ -16,6 +16,11 @@ macro_rules! define_handle {
 
         impl $name {
             #[inline]
+            pub fn from_raw(raw: *mut u8) -> Self {
+                Self(raw)
+            }
+
+            #[inline]
             pub fn into_raw(self) -> *mut u8 {
                 self.0
             }
