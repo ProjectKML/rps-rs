@@ -129,5 +129,12 @@ fn main() {
 
     build.cpp(true).compile("render_pipeline_shaders_sys_cc");
 
+    cc::Build::new()
+        .include("vendor/RenderPipelineShaders/include")
+        .include("vendor/RenderPipelineShaders/src")
+        .file("vendor/RenderPipelineShaders/src/runtime/common/rps_rpsl_host_dll.c")
+        .file("vendor/RenderPipelineShaders/src/runtime/common/rps_rpsl_host_intrinsics.c")
+        .compile("render_pipeline_shaders_sys_dll_cc");
+
     generate_bindings();
 }
