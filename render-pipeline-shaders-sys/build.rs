@@ -68,6 +68,8 @@ fn main() {
     #[cfg(feature = "d3d12")]
     panic!("Feature D3D12 is not supported at the moment");
 
+    generate_bindings();
+
     let mut build = cc::Build::new();
     build
         .cpp(true)
@@ -135,6 +137,4 @@ fn main() {
         .file("vendor/RenderPipelineShaders/src/runtime/common/rps_rpsl_host_dll.c")
         .file("vendor/RenderPipelineShaders/src/runtime/common/rps_rpsl_host_intrinsics.c")
         .compile("render_pipeline_shaders_sys_dll_cc");
-
-    generate_bindings();
 }
