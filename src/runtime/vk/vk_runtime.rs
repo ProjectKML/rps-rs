@@ -1,6 +1,6 @@
 use std::{mem, mem::MaybeUninit};
 
-use ash::vk;
+use ash::{extensions::khr::DynamicRendering, vk};
 use bitflags::bitflags;
 
 use crate::{
@@ -51,13 +51,25 @@ pub struct VKFunctions {
     pub vk_cmd_copy_buffer: vk::PFN_vkCmdCopyBuffer,
     pub vk_cmd_copy_image_to_buffer: vk::PFN_vkCmdCopyImageToBuffer,
     pub vk_cmd_copy_buffer_to_image: vk::PFN_vkCmdCopyBufferToImage,
-    pub vk_cmd_resolve_image: vk::PFN_vkCmdResolveImage
+    pub vk_cmd_resolve_image: vk::PFN_vkCmdResolveImage,
+    pub vk_cmd_begin_rendering: vk::PFN_vkCmdBeginRendering,
+    pub vk_cmd_end_rendering: vk::PFN_vkCmdEndRendering
 }
 
 assert_size_and_align!(VKFunctions, ffi::RpsVKFunctions);
 
 impl VKFunctions {
-    pub fn new(instance: &ash::Instance, device: &ash::Device) -> Self {
+    pub unsafe fn new(instance: &ash::Instance, physical_device: vk::PhysicalDevice, device: &ash::Device) -> Self {
+        let properties = instance.get_physical_device_properties(physical_device);
+
+        let (cmd_begin_rendering, cmd_end_rendering) = if properties.api_version < vk::API_VERSION_1_3 {
+            let dynamic_rendering = DynamicRendering::new(instance, device);
+
+            (dynamic_rendering.fp().cmd_begin_rendering_khr, dynamic_rendering.fp().cmd_end_rendering_khr)
+        } else {
+            (device.fp_v1_3().cmd_begin_rendering, device.fp_v1_3().cmd_end_rendering)
+        };
+
         Self {
             vk_get_physical_device_properties: instance.fp_v1_0().get_physical_device_properties,
             vk_get_physical_device_memory_properties: instance.fp_v1_0().get_physical_device_memory_properties,
@@ -90,7 +102,9 @@ impl VKFunctions {
             vk_cmd_copy_buffer: device.fp_v1_0().cmd_copy_buffer,
             vk_cmd_copy_image_to_buffer: device.fp_v1_0().cmd_copy_image_to_buffer,
             vk_cmd_copy_buffer_to_image: device.fp_v1_0().cmd_copy_buffer_to_image,
-            vk_cmd_resolve_image: device.fp_v1_0().cmd_resolve_image
+            vk_cmd_resolve_image: device.fp_v1_0().cmd_resolve_image,
+            vk_cmd_begin_rendering: cmd_begin_rendering,
+            vk_cmd_end_rendering: cmd_end_rendering
         }
     }
 }
