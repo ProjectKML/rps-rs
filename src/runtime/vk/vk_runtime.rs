@@ -52,8 +52,8 @@ pub struct VKFunctions {
     pub vk_cmd_copy_image_to_buffer: vk::PFN_vkCmdCopyImageToBuffer,
     pub vk_cmd_copy_buffer_to_image: vk::PFN_vkCmdCopyBufferToImage,
     pub vk_cmd_resolve_image: vk::PFN_vkCmdResolveImage,
-    pub vk_cmd_begin_rendering: vk::PFN_vkCmdBeginRendering,
-    pub vk_cmd_end_rendering: vk::PFN_vkCmdEndRendering
+    pub vk_cmd_begin_rendering: Option<vk::PFN_vkCmdBeginRendering>,
+    pub vk_cmd_end_rendering: Option<vk::PFN_vkCmdEndRendering>
 }
 
 assert_size_and_align!(VKFunctions, ffi::RpsVKFunctions);
@@ -63,11 +63,21 @@ impl VKFunctions {
         let properties = instance.get_physical_device_properties(physical_device);
 
         let (cmd_begin_rendering, cmd_end_rendering) = if properties.api_version < vk::API_VERSION_1_3 {
-            let dynamic_rendering = DynamicRendering::new(instance, device);
+            let properties = instance.enumerate_device_extension_properties(physical_device).unwrap_or_default();
 
-            (dynamic_rendering.fp().cmd_begin_rendering_khr, dynamic_rendering.fp().cmd_end_rendering_khr)
+            let dynamic_rendering_supported = properties
+                .iter()
+                .any(|e| libc::strcmp(e.extension_name.as_ptr(), b"VK_KHR_dynamic_rendering\0".as_ptr().cast()) == 0);
+
+            if dynamic_rendering_supported {
+                let dynamic_rendering = DynamicRendering::new(instance, device);
+
+                (Some(dynamic_rendering.fp().cmd_begin_rendering_khr), Some(dynamic_rendering.fp().cmd_end_rendering_khr))
+            } else {
+                (None, None)
+            }
         } else {
-            (device.fp_v1_3().cmd_begin_rendering, device.fp_v1_3().cmd_end_rendering)
+            (Some(device.fp_v1_3().cmd_begin_rendering), Some(device.fp_v1_3().cmd_end_rendering))
         };
 
         Self {
