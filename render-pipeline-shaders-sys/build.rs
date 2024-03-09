@@ -27,14 +27,12 @@ fn generate_bindings() {
         builder = builder.clang_arg("-DRPS_VK_RUNTIME");
     }
 
-    //HACK: replace file and restore it, because it does not work otherwise
-    let rps_vk_runtime_str = fs::read_to_string("vendor/RenderPipelineShaders/include/rps/runtime/vk/rps_vk_runtime.h").unwrap();
-    let rps_vk_runtime_bindgen = rps_vk_runtime_str.replace("RPS_IMPL_OPAQUE_HANDLE", "//");
-    fs::write("vendor/RenderPipelineShaders/include/rps/runtime/vk/rps_vk_runtime.h", rps_vk_runtime_bindgen).unwrap();
-
     builder = builder
-        .clang_arg("-I./vendor/Vulkan-Headers/include")
-        .clang_arg("-I./vendor/RenderPipelineShaders/include")
+        .clang_args([
+            "-I./vendor/Vulkan-Headers/include",
+            "-I./vendor/RenderPipelineShaders/include",
+            "-DBINDGEN"
+        ])
         .header("vendor/RenderPipelineShaders/include/rps/rps.h")
         .formatter(Formatter::Rustfmt)
         .size_t_is_usize(true)
@@ -49,9 +47,6 @@ fn generate_bindings() {
         .layout_tests(false);
 
     let bindings_result = builder.generate();
-
-    //HACK: restore original file
-    fs::write("vendor/RenderPipelineShaders/include/rps/runtime/vk/rps_vk_runtime.h", &rps_vk_runtime_str).unwrap();
 
     let bindings = bindings_result.expect("Failed to generate bindings");
 
