@@ -1,6 +1,6 @@
 use std::{mem, mem::MaybeUninit};
 
-use ash::{extensions::khr::DynamicRendering, vk};
+use ash::{khr::dynamic_rendering, vk};
 use bitflags::bitflags;
 
 use crate::{
@@ -70,7 +70,7 @@ impl VKFunctions {
                 .any(|e| libc::strcmp(e.extension_name.as_ptr(), b"VK_KHR_dynamic_rendering\0".as_ptr().cast()) == 0);
 
             if dynamic_rendering_supported {
-                let dynamic_rendering = DynamicRendering::new(instance, device);
+                let dynamic_rendering = dynamic_rendering::Device::new(instance, device);
 
                 (Some(dynamic_rendering.fp().cmd_begin_rendering_khr), Some(dynamic_rendering.fp().cmd_end_rendering_khr))
             } else {
