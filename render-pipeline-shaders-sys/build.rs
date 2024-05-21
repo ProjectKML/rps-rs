@@ -31,7 +31,7 @@ fn generate_bindings() {
         .clang_args([
             "-I./vendor/Vulkan-Headers/include",
             "-I./vendor/RenderPipelineShaders/include",
-            "-DBINDGEN"
+            "-DRPS_SKIP_OPAQUE_HANDLES"
         ])
         .header("vendor/RenderPipelineShaders/include/rps/rps.h")
         .formatter(Formatter::Rustfmt)

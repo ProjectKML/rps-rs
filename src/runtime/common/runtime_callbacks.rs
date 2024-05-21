@@ -6,14 +6,9 @@ use std::{
 use bitflags::bitflags;
 
 use crate::{
-    core::Result,
-    ffi,
-    utils::{assert_size_and_align, define_handle},
-    AccessAttr, Bool, ClearValue, Format, GpuMemoryRequirement, HeapPlacement, RenderGraph, RenderGraphPhaseInfo, ResourceDesc, ResourceId, ResourceType, RuntimeCommandBuffer,
-    RuntimeResource, Variable
+    core::Result, ffi, utils::assert_size_and_align, AccessAttr, Bool, ClearValue, Format, GpuMemoryRequirement, HeapPlacement, RenderGraph, RenderGraphPhaseInfo, ResourceDesc,
+    ResourceId, ResourceType, RuntimeCommandBuffer, RuntimeHeap, RuntimeResource, Variable
 };
-
-define_handle!(RuntimeHeap);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
