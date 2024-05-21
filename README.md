@@ -26,13 +26,6 @@
 [![Build status][build-badge]][build-url]
 </div>
 
-This repository contains 2 crates:
-
-| Name                                                          | Description                                                 | Links                                                                                                                                                                                                                             |
-|---------------------------------------------------------------|-------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [`render-pipeline-shaders`](src/)                             | Low-level interface on top of `render-pipeline-shaders-sys` | [![Crates.io](https://img.shields.io/crates/v/physx.svg)](https://crates.io/crates/render-pipeline-shaders) [![Docs](https://docs.rs/render-pipeline-shaders/badge.svg)](https://docs.rs/render-pipeline-shaders)                 |
-| [`render-pipeline-shaders-sys`](render-pipeline-shaders-sys/) | Bindgen-generated bindings                                  | [![Crates.io](https://img.shields.io/crates/v/physx-sys.svg)](https://crates.io/crates/render-pipeline-shaders-sys) [![Docs](https://docs.rs/render-pipeline-shaders-sys/badge.svg)](https://docs.rs/render-pipeline-shaders-sys) |
-
 ## Basic example
 
 ```Rust
