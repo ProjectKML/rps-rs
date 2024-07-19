@@ -214,6 +214,8 @@ impl TypeId {
     pub const MAX_VALUE: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_MAX_VALUE as _);
     pub const RUNTIME_DEFINED_BEGIN: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_RUNTIME_DEFINED_BEGIN as _);
     pub const USER_DEFINED_BEGIN: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_USER_DEFINED_BEGIN as _);
+    pub const IMAGE_VIEW: Self = Self(sys::RpsRuntimeBuiltInTypeIds_RPS_TYPE_IMAGE_VIEW as _);
+    pub const BUFFER_VIEW: Self = Self(sys::RpsRuntimeBuiltInTypeIds_RPS_TYPE_BUFFER_VIEW as _);
 
     #[inline]
     pub unsafe fn from_raw(raw: u32) -> Self {
