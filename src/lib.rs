@@ -2,8 +2,8 @@
 
 mod core;
 
-mod ffi {
-    pub use render_pipeline_shaders_sys::*;
+mod sys {
+    pub use rps_sys::*;
 }
 
 mod runtime;

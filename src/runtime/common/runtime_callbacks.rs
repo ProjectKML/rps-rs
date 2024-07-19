@@ -6,7 +6,7 @@ use std::{
 use bitflags::bitflags;
 
 use crate::{
-    core::Result, ffi, utils::assert_size_and_align, AccessAttr, Bool, ClearValue, Format, GpuMemoryRequirement, HeapPlacement, RenderGraph, RenderGraphPhaseInfo, ResourceDesc,
+    core::Result, sys, utils::assert_size_and_align, AccessAttr, Bool, ClearValue, Format, GpuMemoryRequirement, HeapPlacement, RenderGraph, RenderGraphPhaseInfo, ResourceDesc,
     ResourceId, ResourceType, RuntimeCommandBuffer, RuntimeHeap, RuntimeResource, Variable
 };
 
@@ -27,7 +27,7 @@ impl Default for RuntimeOpCreateHeapArgs {
     }
 }
 
-assert_size_and_align!(RuntimeOpCreateHeapArgs, ffi::RpsRuntimeOpCreateHeapArgs);
+assert_size_and_align!(RuntimeOpCreateHeapArgs, sys::RpsRuntimeOpCreateHeapArgs);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -43,7 +43,7 @@ impl Default for RuntimeOpDestroyHeapArgs {
     }
 }
 
-assert_size_and_align!(RuntimeOpDestroyHeapArgs, ffi::RpsRuntimeOpDestroyHeapArgs);
+assert_size_and_align!(RuntimeOpDestroyHeapArgs, sys::RpsRuntimeOpDestroyHeapArgs);
 
 #[repr(C)]
 #[derive(Clone, Copy)]
@@ -70,7 +70,7 @@ impl Default for RuntimeOpCreateResourceArgs {
     }
 }
 
-assert_size_and_align!(RuntimeOpCreateResourceArgs, ffi::RpsRuntimeOpCreateResourceArgs);
+assert_size_and_align!(RuntimeOpCreateResourceArgs, sys::RpsRuntimeOpCreateResourceArgs);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -87,7 +87,7 @@ impl Default for RuntimeOpDestroyResourceArgs {
     }
 }
 
-assert_size_and_align!(RuntimeOpDestroyResourceArgs, ffi::RpsRuntimeOpDestroyResourceArgs);
+assert_size_and_align!(RuntimeOpDestroyResourceArgs, sys::RpsRuntimeOpDestroyResourceArgs);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -105,27 +105,27 @@ impl Default for RuntimeOpCreateNodeUserResourcesArgs {
     }
 }
 
-assert_size_and_align!(RuntimeOpCreateNodeUserResourcesArgs, ffi::RpsRuntimeOpCreateNodeUserResourcesArgs);
+assert_size_and_align!(RuntimeOpCreateNodeUserResourcesArgs, sys::RpsRuntimeOpCreateNodeUserResourcesArgs);
 
 #[repr(transparent)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub struct RuntimeDebugMarkerMode(u32);
 
 impl RuntimeDebugMarkerMode {
-    pub const BEGIN: Self = Self(ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_BEGIN as _);
-    pub const LABEL: Self = Self(ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_LABEL as _);
-    pub const END: Self = Self(ffi::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_END as _);
+    pub const BEGIN: Self = Self(sys::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_BEGIN as _);
+    pub const LABEL: Self = Self(sys::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_LABEL as _);
+    pub const END: Self = Self(sys::RpsRuntimeDebugMarkerMode_RPS_RUNTIME_DEBUG_MARKER_END as _);
 }
 
 bitflags! {
     #[repr(C)]
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct RuntimeRenderPassFlags: u32 {
-        const NONE = ffi::RpsRuntimeRenderPassFlagBits_RPS_RUNTIME_RENDER_PASS_FLAG_NONE as _;
-        const SUSPENDING = ffi::RpsRuntimeRenderPassFlagBits_RPS_RUNTIME_RENDER_PASS_SUSPENDING as _;
-        const RESUMING = ffi::RpsRuntimeRenderPassFlagBits_RPS_RUNTIME_RENDER_PASS_RESUMING as _;
-        const EXECUTE_SECONDARY_COMMAND_BUFFERS = ffi::RpsRuntimeRenderPassFlagBits_RPS_RUNTIME_RENDER_PASS_EXECUTE_SECONDARY_COMMAND_BUFFERS as _;
-        const SECONDARY_COMMAND_BUFFER = ffi::RpsRuntimeRenderPassFlagBits_RPS_RUNTIME_RENDER_PASS_SECONDARY_COMMAND_BUFFER as _;
+        const NONE = sys::RpsRuntimeRenderPassFlagBits_RPS_RUNTIME_RENDER_PASS_FLAG_NONE as _;
+        const SUSPENDING = sys::RpsRuntimeRenderPassFlagBits_RPS_RUNTIME_RENDER_PASS_SUSPENDING as _;
+        const RESUMING = sys::RpsRuntimeRenderPassFlagBits_RPS_RUNTIME_RENDER_PASS_RESUMING as _;
+        const EXECUTE_SECONDARY_COMMAND_BUFFERS = sys::RpsRuntimeRenderPassFlagBits_RPS_RUNTIME_RENDER_PASS_EXECUTE_SECONDARY_COMMAND_BUFFERS as _;
+        const SECONDARY_COMMAND_BUFFER = sys::RpsRuntimeRenderPassFlagBits_RPS_RUNTIME_RENDER_PASS_SECONDARY_COMMAND_BUFFER as _;
     }
 }
 
@@ -145,7 +145,7 @@ impl Default for RuntimeOpRecordDebugMarkerArgs {
     }
 }
 
-assert_size_and_align!(RuntimeOpRecordDebugMarkerArgs, ffi::RpsRuntimeOpRecordDebugMarkerArgs);
+assert_size_and_align!(RuntimeOpRecordDebugMarkerArgs, sys::RpsRuntimeOpRecordDebugMarkerArgs);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -162,7 +162,7 @@ impl Default for RuntimeOpSetDebugNameArgs {
     }
 }
 
-assert_size_and_align!(RuntimeOpSetDebugNameArgs, ffi::RpsRuntimeOpSetDebugNameArgs);
+assert_size_and_align!(RuntimeOpSetDebugNameArgs, sys::RpsRuntimeOpSetDebugNameArgs);
 
 pub type PfnRuntimeDeviceBuildRenderGraphPhases =
     Option<unsafe extern "C" fn(user_context: *mut c_void, render_graph: RenderGraph, phase_info: *const *const RenderGraphPhaseInfo, num_phaeses: *mut u32) -> Result>;
@@ -200,4 +200,4 @@ pub struct RuntimeCallbacks {
     pub pfn_set_debug_name: PfnRuntimeOpSetDebugName
 }
 
-assert_size_and_align!(RuntimeCallbacks, ffi::RpsRuntimeCallbacks);
+assert_size_and_align!(RuntimeCallbacks, sys::RpsRuntimeCallbacks);

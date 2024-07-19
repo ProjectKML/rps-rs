@@ -9,7 +9,7 @@ use bitflags::bitflags;
 use libloading::Library;
 
 use crate::{
-    ffi, result_from_ffi,
+    result_from_ffi, sys,
     utils::{assert_size_and_align, define_handle},
     RpsResult
 };
@@ -48,7 +48,7 @@ impl Default for Allocator {
     }
 }
 
-assert_size_and_align!(Allocator, ffi::RpsAllocator);
+assert_size_and_align!(Allocator, sys::RpsAllocator);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
@@ -57,9 +57,9 @@ pub struct AllocInfo {
     pub alignment: usize
 }
 
-assert_size_and_align!(AllocInfo, ffi::RpsAllocInfo);
+assert_size_and_align!(AllocInfo, sys::RpsAllocInfo);
 
-pub type VaList = ffi::va_list;
+pub type VaList = sys::va_list;
 
 pub type PfnPrintf = Option<unsafe extern "C" fn(context: *mut c_void, format: *const c_char, ...)>;
 pub type PfnVPrintf = Option<unsafe extern "C" fn(context: *mut c_void, format: *const c_char, vl: VaList)>;
@@ -79,7 +79,7 @@ impl Default for Printer {
     }
 }
 
-assert_size_and_align!(Printer, ffi::RpsPrinter);
+assert_size_and_align!(Printer, sys::RpsPrinter);
 
 pub type PfnRandomUniformInt = Option<unsafe extern "C" fn(context: *mut c_void, min_value: i32, max_value: i32)>;
 
@@ -97,7 +97,7 @@ impl Default for RandomNumberGenerator {
     }
 }
 
-assert_size_and_align!(RandomNumberGenerator, ffi::RpsRandomNumberGenerator);
+assert_size_and_align!(RandomNumberGenerator, sys::RpsRandomNumberGenerator);
 
 define_handle!(Device);
 
@@ -112,23 +112,23 @@ pub struct DeviceCreateInfo {
     pub pfn_device_on_destroy: PfnDeviceOnDestroy
 }
 
-assert_size_and_align!(DeviceCreateInfo, ffi::RpsDeviceCreateInfo);
+assert_size_and_align!(DeviceCreateInfo, sys::RpsDeviceCreateInfo);
 
 #[inline]
 pub unsafe fn device_create(create_info: &DeviceCreateInfo) -> RpsResult<Device> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsDeviceCreate(create_info as *const DeviceCreateInfo as _, &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsDeviceCreate(create_info as *const DeviceCreateInfo as _, &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
 #[inline]
 pub unsafe fn device_destroy(device: Device) {
-    ffi::rpsDeviceDestroy(device.into_raw() as _);
+    sys::rpsDeviceDestroy(device.into_raw() as _);
 }
 
 #[inline]
 pub unsafe fn device_get_private_data(device: Device) -> *const c_void {
-    ffi::rpsDeviceGetPrivateData(device.into_raw() as _)
+    sys::rpsDeviceGetPrivateData(device.into_raw() as _)
 }
 
 #[repr(transparent)]
@@ -136,26 +136,26 @@ pub unsafe fn device_get_private_data(device: Device) -> *const c_void {
 pub struct DiagLogLevel(u32);
 
 impl DiagLogLevel {
-    pub const INFO: Self = Self(ffi::RpsDiagLogLevel_RPS_DIAG_INFO as _);
-    pub const WARNING: Self = Self(ffi::RpsDiagLogLevel_RPS_DIAG_WARNING as _);
-    pub const ERROR: Self = Self(ffi::RpsDiagLogLevel_RPS_DIAG_ERROR as _);
-    pub const FATAL: Self = Self(ffi::RpsDiagLogLevel_RPS_DIAG_FATAL as _);
-    pub const COUNT: Self = Self(ffi::RpsDiagLogLevel_RPS_DIAG_COUNT as _);
+    pub const INFO: Self = Self(sys::RpsDiagLogLevel_RPS_DIAG_INFO as _);
+    pub const WARNING: Self = Self(sys::RpsDiagLogLevel_RPS_DIAG_WARNING as _);
+    pub const ERROR: Self = Self(sys::RpsDiagLogLevel_RPS_DIAG_ERROR as _);
+    pub const FATAL: Self = Self(sys::RpsDiagLogLevel_RPS_DIAG_FATAL as _);
+    pub const COUNT: Self = Self(sys::RpsDiagLogLevel_RPS_DIAG_COUNT as _);
 }
 
 #[inline]
 pub unsafe fn set_global_debug_printer(printer: *const Printer) {
-    ffi::rpsSetGlobalDebugPrinter(printer.cast());
+    sys::rpsSetGlobalDebugPrinter(printer.cast());
 }
 
 #[inline]
 pub unsafe fn get_global_debug_printer() -> *const Printer {
-    ffi::rpsGetGlobalDebugPrinter().cast()
+    sys::rpsGetGlobalDebugPrinter().cast()
 }
 
 #[inline]
 pub unsafe fn set_global_debug_printer_log_level(min_log_level: DiagLogLevel) {
-    ffi::rpsSetGlobalDebugPrinterLogLevel(mem::transmute(min_log_level))
+    sys::rpsSetGlobalDebugPrinterLogLevel(mem::transmute(min_log_level))
 }
 
 #[repr(C)]
@@ -165,14 +165,14 @@ pub struct TypeInfo {
     pub id: u16
 }
 
-assert_size_and_align!(TypeInfo, ffi::RpsTypeInfo);
+assert_size_and_align!(TypeInfo, sys::RpsTypeInfo);
 
 impl TypeInfo {
     #[inline]
     pub fn init_from_size(size: usize) -> Self {
         Self {
             size: size as _,
-            id: ffi::RpsBuiltInTypeIds_RPS_TYPE_OPAQUE as _
+            id: sys::RpsBuiltInTypeIds_RPS_TYPE_OPAQUE as _
         }
     }
 
@@ -197,20 +197,20 @@ impl TypeInfo {
 pub struct BuiltInTypeIds(u32);
 
 impl BuiltInTypeIds {
-    pub const BOOL: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_BOOL as _);
-    pub const INT8: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT8 as _);
-    pub const UINT8: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT8 as _);
-    pub const INT16: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT16 as _);
-    pub const UINT16: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT16 as _);
-    pub const INT32: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT32 as _);
-    pub const UINT32: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT32 as _);
-    pub const INT64: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT64 as _);
-    pub const UINT64: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT64 as _);
-    pub const FLOAT32: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_FLOAT32 as _);
-    pub const FLOAT64: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_FLOAT64 as _);
-    pub const MAX_VALUE: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_MAX_VALUE as _);
-    pub const RUNTIME_DEFINED_BEGIN: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_RUNTIME_DEFINED_BEGIN as _);
-    pub const USER_DEFINED_BEGIN: Self = Self(ffi::RpsBuiltInTypeIds_RPS_TYPE_USER_DEFINED_BEGIN as _);
+    pub const BOOL: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_BOOL as _);
+    pub const INT8: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT8 as _);
+    pub const UINT8: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT8 as _);
+    pub const INT16: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT16 as _);
+    pub const UINT16: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT16 as _);
+    pub const INT32: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT32 as _);
+    pub const UINT32: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT32 as _);
+    pub const INT64: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT64 as _);
+    pub const UINT64: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT64 as _);
+    pub const FLOAT32: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_FLOAT32 as _);
+    pub const FLOAT64: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_FLOAT64 as _);
+    pub const MAX_VALUE: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_MAX_VALUE as _);
+    pub const RUNTIME_DEFINED_BEGIN: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_RUNTIME_DEFINED_BEGIN as _);
+    pub const USER_DEFINED_BEGIN: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_USER_DEFINED_BEGIN as _);
 }
 
 pub type TypeId = i32;
@@ -229,9 +229,9 @@ bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct SubgraphFlags: u32 {
-        const NONE = ffi::RpsSubgraphFlagBits_RPS_SUBGRAPH_FLAG_NONE as _;
-        const ATOMIC = ffi::RpsSubgraphFlagBits_RPS_SUBGRAPH_FLAG_ATOMIC as _;
-        const SEQUENTIAL = ffi::RpsSubgraphFlagBits_RPS_SUBGRAPH_FLAG_SEQUENTIAL as _;
+        const NONE = sys::RpsSubgraphFlagBits_RPS_SUBGRAPH_FLAG_NONE as _;
+        const ATOMIC = sys::RpsSubgraphFlagBits_RPS_SUBGRAPH_FLAG_ATOMIC as _;
+        const SEQUENTIAL = sys::RpsSubgraphFlagBits_RPS_SUBGRAPH_FLAG_SEQUENTIAL as _;
     }
 }
 
@@ -244,7 +244,7 @@ pub struct SourceLocation {
     pub line: u32
 }
 
-assert_size_and_align!(SourceLocation, ffi::RpsSourceLocation);
+assert_size_and_align!(SourceLocation, sys::RpsSourceLocation);
 
 define_handle!(DebugInfo);
 
@@ -294,16 +294,16 @@ macro_rules! declare_rpsl_entry {
 pub const ENTRY_TABLE_NAME: &str = "rpsl_M_entry_tbl";
 pub const MODULE_ID_NAME: &str = "rpsl_M_module_id";
 
-pub type PfnRpslDynLibInit = ffi::PFN_rpslDynLibInit;
+pub type PfnRpslDynLibInit = sys::PFN_rpslDynLibInit;
 
 #[inline]
 pub unsafe fn rpsl_dynamic_library_init(pfn_dyn_lib_init: PfnRpslDynLibInit) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsRpslDynamicLibraryInit(pfn_dyn_lib_init))
+    result_from_ffi(sys::rpsRpslDynamicLibraryInit(pfn_dyn_lib_init))
 }
 
 #[inline]
 pub unsafe fn make_rpsl_entry_name(buf: *mut c_char, buf_size: usize, module_name: *const c_char, entry_name: *const c_char) -> *const c_char {
-    ffi::rpsMakeRpslEntryName(buf, buf_size, module_name, entry_name)
+    sys::rpsMakeRpslEntryName(buf, buf_size, module_name, entry_name)
 }
 
 define_handle!(JITModule);

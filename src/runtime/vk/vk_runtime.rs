@@ -4,16 +4,16 @@ use ash::{khr::dynamic_rendering, vk};
 use bitflags::bitflags;
 
 use crate::{
-    ffi, result_from_ffi, utils::assert_size_and_align, CmdCallbackContext, Device, DeviceCreateInfo, Format, RpsResult, RuntimeCommandBuffer, RuntimeDeviceCreateInfo, RuntimeHeap,
+    result_from_ffi, sys, utils::assert_size_and_align, CmdCallbackContext, Device, DeviceCreateInfo, Format, RpsResult, RuntimeCommandBuffer, RuntimeDeviceCreateInfo, RuntimeHeap,
     RuntimeResource
 };
 bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
     pub struct VKRuntimeFlags: u32 {
-        const NONE = ffi::RpsVKRuntimeFlagBits_RPS_VK_RUNTIME_FLAG_NONE as _;
-        const PREFER_RENDER_PASS = ffi::RpsVKRuntimeFlagBits_RPS_VK_RUNTIME_FLAG_PREFER_RENDER_PASS as _;
-        const DONT_FLIP_VIEWPORT = ffi::RpsVKRuntimeFlagBits_RPS_VK_RUNTIME_FLAG_DONT_FLIP_VIEWPORT as _;
+        const NONE = sys::RpsVKRuntimeFlagBits_RPS_VK_RUNTIME_FLAG_NONE as _;
+        const PREFER_RENDER_PASS = sys::RpsVKRuntimeFlagBits_RPS_VK_RUNTIME_FLAG_PREFER_RENDER_PASS as _;
+        const DONT_FLIP_VIEWPORT = sys::RpsVKRuntimeFlagBits_RPS_VK_RUNTIME_FLAG_DONT_FLIP_VIEWPORT as _;
     }
 }
 
@@ -56,7 +56,7 @@ pub struct VKFunctions {
     pub vk_cmd_end_rendering: Option<vk::PFN_vkCmdEndRendering>
 }
 
-assert_size_and_align!(VKFunctions, ffi::RpsVKFunctions);
+assert_size_and_align!(VKFunctions, sys::RpsVKFunctions);
 
 impl VKFunctions {
     pub unsafe fn new(instance: &ash::Instance, physical_device: vk::PhysicalDevice, device: &ash::Device) -> Self {
@@ -137,12 +137,12 @@ impl Default for VKRuntimeDeviceCreateInfo {
     }
 }
 
-assert_size_and_align!(VKRuntimeDeviceCreateInfo, ffi::RpsVKRuntimeDeviceCreateInfo);
+assert_size_and_align!(VKRuntimeDeviceCreateInfo, sys::RpsVKRuntimeDeviceCreateInfo);
 
 #[inline]
 pub unsafe fn vk_runtime_device_create(create_info: *const VKRuntimeDeviceCreateInfo) -> RpsResult<Device> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsVKRuntimeDeviceCreate(create_info.cast(), &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsVKRuntimeDeviceCreate(create_info.cast(), &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
@@ -194,13 +194,13 @@ pub unsafe fn vk_get_cmd_arg_image_view_array(
     image_views: *mut vk::ImageView,
     num_image_views: u32
 ) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsVKGetCmdArgImageViewArray(context.cast(), arg_index, src_array_offset, image_views, num_image_views))
+    result_from_ffi(sys::rpsVKGetCmdArgImageViewArray(context.cast(), arg_index, src_array_offset, image_views, num_image_views))
 }
 
 #[inline]
 pub unsafe fn vk_get_cmd_arg_image_view(context: *const CmdCallbackContext, arg_index: u32) -> RpsResult<vk::ImageView> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsVKGetCmdArgImageView(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsVKGetCmdArgImageView(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
@@ -211,7 +211,7 @@ pub struct VkImageViewInfo {
     pub layout: vk::ImageLayout
 }
 
-assert_size_and_align!(VkImageViewInfo, ffi::RpsVkImageViewInfo);
+assert_size_and_align!(VkImageViewInfo, sys::RpsVkImageViewInfo);
 
 #[inline]
 pub unsafe fn vk_get_cmd_arg_image_view_info_array(
@@ -221,7 +221,7 @@ pub unsafe fn vk_get_cmd_arg_image_view_info_array(
     image_view_infos: *mut VkImageViewInfo,
     num_image_view_infos: u32
 ) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsVKGetCmdArgImageViewInfoArray(
+    result_from_ffi(sys::rpsVKGetCmdArgImageViewInfoArray(
         context.cast(),
         arg_index,
         src_array_offset,
@@ -232,13 +232,13 @@ pub unsafe fn vk_get_cmd_arg_image_view_info_array(
 
 #[inline]
 pub unsafe fn vk_get_cmd_arg_image_array(context: *const CmdCallbackContext, arg_index: u32, src_array_offset: u32, images: *mut vk::Image, num_images: u32) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsVKGetCmdArgImageArray(context.cast(), arg_index, src_array_offset, images, num_images))
+    result_from_ffi(sys::rpsVKGetCmdArgImageArray(context.cast(), arg_index, src_array_offset, images, num_images))
 }
 
 #[inline]
 pub unsafe fn vk_get_cmd_arg_image(context: *const CmdCallbackContext, arg_index: u32) -> RpsResult<vk::Image> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsVKGetCmdArgImage(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsVKGetCmdArgImage(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
@@ -250,25 +250,25 @@ pub unsafe fn vk_get_cmd_arg_buffer_view_array(
     buffer_views: *mut vk::BufferView,
     num_buffer_views: u32
 ) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsVKGetCmdArgBufferViewArray(context.cast(), arg_index, src_array_offset, buffer_views, num_buffer_views))
+    result_from_ffi(sys::rpsVKGetCmdArgBufferViewArray(context.cast(), arg_index, src_array_offset, buffer_views, num_buffer_views))
 }
 
 #[inline]
 pub unsafe fn vk_get_cmd_arg_buffer_view(context: *const CmdCallbackContext, arg_index: u32) -> RpsResult<vk::BufferView> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsVKGetCmdArgBufferView(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsVKGetCmdArgBufferView(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
 #[inline]
 pub unsafe fn vk_get_cmd_arg_buffer_array(context: *const CmdCallbackContext, arg_index: u32, src_array_offset: u32, buffers: *mut vk::Buffer, num_buffers: u32) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsVKGetCmdArgBufferArray(context.cast(), arg_index, src_array_offset, buffers, num_buffers))
+    result_from_ffi(sys::rpsVKGetCmdArgBufferArray(context.cast(), arg_index, src_array_offset, buffers, num_buffers))
 }
 
 #[inline]
 pub unsafe fn vk_get_cmd_arg_buffer(context: *const CmdCallbackContext, arg_index: u32) -> RpsResult<vk::Buffer> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsVKGetCmdArgBuffer(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsVKGetCmdArgBuffer(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
@@ -280,7 +280,7 @@ pub struct VkDeviceMemoryRange {
     pub size: usize
 }
 
-assert_size_and_align!(VkDeviceMemoryRange, ffi::RpsVkDeviceMemoryRange);
+assert_size_and_align!(VkDeviceMemoryRange, sys::RpsVkDeviceMemoryRange);
 
 #[inline]
 pub unsafe fn vk_get_cmd_arg_gpu_memory_array(
@@ -290,29 +290,29 @@ pub unsafe fn vk_get_cmd_arg_gpu_memory_array(
     memory_ranges: *mut VkDeviceMemoryRange,
     num_ranges: u32
 ) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsVKGetCmdArgGpuMemoryArray(context.cast(), arg_index, src_array_offset, memory_ranges.cast(), num_ranges))
+    result_from_ffi(sys::rpsVKGetCmdArgGpuMemoryArray(context.cast(), arg_index, src_array_offset, memory_ranges.cast(), num_ranges))
 }
 
 #[inline]
 pub unsafe fn vk_get_cmd_arg_gpu_memory(context: *const CmdCallbackContext, arg_index: u32) -> RpsResult<VkDeviceMemoryRange> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsVKGetCmdArgGpuMemory(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsVKGetCmdArgGpuMemory(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
 #[inline]
 pub unsafe fn vk_get_cmd_render_pass(context: *const CmdCallbackContext) -> RpsResult<vk::RenderPass> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsVKGetCmdRenderPass(context.cast(), &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsVKGetCmdRenderPass(context.cast(), &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
 #[inline]
 pub unsafe fn format_to_vk(format: Format) -> vk::Format {
-    ffi::rpsFormatToVK(mem::transmute(format))
+    sys::rpsFormatToVK(mem::transmute(format))
 }
 
 #[inline]
 pub unsafe fn format_from_vk(format: vk::Format) -> Format {
-    mem::transmute(ffi::rpsFormatFromVK(format))
+    mem::transmute(sys::rpsFormatFromVK(format))
 }

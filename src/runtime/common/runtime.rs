@@ -8,7 +8,7 @@ use bitflags::bitflags;
 
 use crate::{
     core::{Result, RpsResult},
-    ffi, result_from_ffi,
+    result_from_ffi, sys,
     utils::{assert_size_and_align, define_handle},
     AccessAttr, Bool, ClearValue, CmdRenderTargetInfo, CmdViewportInfo, Constant, Device, DeviceCreateInfo, Format, Index32, NodeDeclId, NodeId, ParamId, RandomNumberGenerator,
     ResourceDesc, ResourceId, RpslEntry, RuntimeCallbacks, RuntimeRenderPassFlags, SemanticAttr, SubresourceRange, TypeInfo, Variable, INDEX_NONE_U32
@@ -30,7 +30,7 @@ pub struct ParamAttr {
     pub semantic: SemanticAttr
 }
 
-assert_size_and_align!(ParamAttr, ffi::RpsParamAttr);
+assert_size_and_align!(ParamAttr, sys::RpsParamAttr);
 
 define_handle!(ParamAttrList);
 define_handle!(NodeAttrList);
@@ -39,22 +39,22 @@ bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct ScheduleFlags: u32 {
-        const UNSPECIFIED = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_UNSPECIFIED as _;
-        const KEEP_PROGRAM_ORDER = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_KEEP_PROGRAM_ORDER_BIT as _;
-        const PREFER_MEMORY_SAVING = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_PREFER_MEMORY_SAVING_BIT as _;
-        const RANDOM_ORDER = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_RANDOM_ORDER_BIT as _;
-        const MINIMIZE_COMPUTE_GFX_SWITCH = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_MINIMIZE_COMPUTE_GFX_SWITCH_BIT as _;
-        const DISABLE_DEAD_CODE_ELIMINATION = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_DISABLE_DEAD_CODE_ELIMINATION_BIT as _;
-        const WORKLOAD_TYPE_PIPELINING_DISABLE = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_WORKLOAD_TYPE_PIPELINING_DISABLE_BIT as _;
-        const WORKLOAD_TYPE_PIPELINING_AGGRESSIVE = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_WORKLOAD_TYPE_PIPELINING_AGGRESSIVE_BIT as _;
-        const ALLOW_SPLIT_BARRIERS = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_ALLOW_SPLIT_BARRIERS_BIT as _;
-        const AVOID_RESCHEDULE = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_AVOID_RESCHEDULE_BIT as _;
-        const ALLOW_FRAME_OVERLAP = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_ALLOW_FRAME_OVERLAP_BIT as _;
-        const PREFER_RENDERPASS_TRANSITIONS = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_PREFER_RENDERPASS_TRANSITIONS_BIT as _;
-        const DISABLE_RENDERPASS_TRANSITIONS = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_DISABLE_RENDERPASS_TRANSITIONS_BIT as _;
-        const DEFAULT = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_DEFAULT as _;
-        const DEFAULT_PERFORMANCE = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_DEFAULT_PERFORMANCE as _;
-        const DEFAULT_MEMORY = ffi::RpsScheduleFlagBits_RPS_SCHEDULE_DEFAULT_MEMORY as _;
+        const UNSPECIFIED = sys::RpsScheduleFlagBits_RPS_SCHEDULE_UNSPECIFIED as _;
+        const KEEP_PROGRAM_ORDER = sys::RpsScheduleFlagBits_RPS_SCHEDULE_KEEP_PROGRAM_ORDER_BIT as _;
+        const PREFER_MEMORY_SAVING = sys::RpsScheduleFlagBits_RPS_SCHEDULE_PREFER_MEMORY_SAVING_BIT as _;
+        const RANDOM_ORDER = sys::RpsScheduleFlagBits_RPS_SCHEDULE_RANDOM_ORDER_BIT as _;
+        const MINIMIZE_COMPUTE_GFX_SWITCH = sys::RpsScheduleFlagBits_RPS_SCHEDULE_MINIMIZE_COMPUTE_GFX_SWITCH_BIT as _;
+        const DISABLE_DEAD_CODE_ELIMINATION = sys::RpsScheduleFlagBits_RPS_SCHEDULE_DISABLE_DEAD_CODE_ELIMINATION_BIT as _;
+        const WORKLOAD_TYPE_PIPELINING_DISABLE = sys::RpsScheduleFlagBits_RPS_SCHEDULE_WORKLOAD_TYPE_PIPELINING_DISABLE_BIT as _;
+        const WORKLOAD_TYPE_PIPELINING_AGGRESSIVE = sys::RpsScheduleFlagBits_RPS_SCHEDULE_WORKLOAD_TYPE_PIPELINING_AGGRESSIVE_BIT as _;
+        const ALLOW_SPLIT_BARRIERS = sys::RpsScheduleFlagBits_RPS_SCHEDULE_ALLOW_SPLIT_BARRIERS_BIT as _;
+        const AVOID_RESCHEDULE = sys::RpsScheduleFlagBits_RPS_SCHEDULE_AVOID_RESCHEDULE_BIT as _;
+        const ALLOW_FRAME_OVERLAP = sys::RpsScheduleFlagBits_RPS_SCHEDULE_ALLOW_FRAME_OVERLAP_BIT as _;
+        const PREFER_RENDERPASS_TRANSITIONS = sys::RpsScheduleFlagBits_RPS_SCHEDULE_PREFER_RENDERPASS_TRANSITIONS_BIT as _;
+        const DISABLE_RENDERPASS_TRANSITIONS = sys::RpsScheduleFlagBits_RPS_SCHEDULE_DISABLE_RENDERPASS_TRANSITIONS_BIT as _;
+        const DEFAULT = sys::RpsScheduleFlagBits_RPS_SCHEDULE_DEFAULT as _;
+        const DEFAULT_PERFORMANCE = sys::RpsScheduleFlagBits_RPS_SCHEDULE_DEFAULT_PERFORMANCE as _;
+        const DEFAULT_MEMORY = sys::RpsScheduleFlagBits_RPS_SCHEDULE_DEFAULT_MEMORY as _;
     }
 }
 
@@ -62,13 +62,13 @@ bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct DiagnosticFlags: u32 {
-        const NONE = ffi::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_NONE as _;
-        const ENABLE_PRE_SCHEDULE_DUMP = ffi::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_ENABLE_PRE_SCHEDULE_DUMP as _;
-        const ENABLE_POST_SCHEDULE_DUMP = ffi::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_ENABLE_POST_SCHEDULE_DUMP as _;
-        const ENABLE_DAG_DUMP = ffi::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_ENABLE_DAG_DUMP as _;
-        const ENABLE_SOURCE_LOCATION = ffi::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_ENABLE_SOURCE_LOCATION as _;
-        const ENABLE_RUNTIME_DEBUG_NAMES = ffi::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_ENABLE_RUNTIME_DEBUG_NAMES as _;
-        const ENABLE_ALL = ffi::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_ENABLE_ALL as _;
+        const NONE = sys::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_NONE as _;
+        const ENABLE_PRE_SCHEDULE_DUMP = sys::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_ENABLE_PRE_SCHEDULE_DUMP as _;
+        const ENABLE_POST_SCHEDULE_DUMP = sys::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_ENABLE_POST_SCHEDULE_DUMP as _;
+        const ENABLE_DAG_DUMP = sys::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_ENABLE_DAG_DUMP as _;
+        const ENABLE_SOURCE_LOCATION = sys::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_ENABLE_SOURCE_LOCATION as _;
+        const ENABLE_RUNTIME_DEBUG_NAMES = sys::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_ENABLE_RUNTIME_DEBUG_NAMES as _;
+        const ENABLE_ALL = sys::RpsDiagnosticFlagBits_RPS_DIAGNOSTIC_ENABLE_ALL as _;
     }
 }
 
@@ -76,10 +76,10 @@ bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct RenderGraphFlags: u32 {
-        const NONE = ffi::RpsRenderGraphFlagBits_RPS_RENDER_GRAPH_FLAG_NONE as _;
-        const DISALLOW_UNBOUND_NODES = ffi::RpsRenderGraphFlagBits_RPS_RENDER_GRAPH_DISALLOW_UNBOUND_NODES_BIT as _;
-        const NO_GPU_MEMORY_ALIASING = ffi::RpsRenderGraphFlagBits_RPS_RENDER_GRAPH_NO_GPU_MEMORY_ALIASING as _;
-        const NO_LIFETIME_ANALYSIS = ffi::RpsRenderGraphFlagBits_RPS_RENDER_GRAPH_NO_LIFETIME_ANALYSIS as _;
+        const NONE = sys::RpsRenderGraphFlagBits_RPS_RENDER_GRAPH_FLAG_NONE as _;
+        const DISALLOW_UNBOUND_NODES = sys::RpsRenderGraphFlagBits_RPS_RENDER_GRAPH_DISALLOW_UNBOUND_NODES_BIT as _;
+        const NO_GPU_MEMORY_ALIASING = sys::RpsRenderGraphFlagBits_RPS_RENDER_GRAPH_NO_GPU_MEMORY_ALIASING as _;
+        const NO_LIFETIME_ANALYSIS = sys::RpsRenderGraphFlagBits_RPS_RENDER_GRAPH_NO_LIFETIME_ANALYSIS as _;
     }
 }
 
@@ -89,12 +89,12 @@ bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct NodeDeclFlags: u32 {
-        const NONE = ffi::RpsNodeDeclFlagBits_RPS_NODE_DECL_FLAG_NONE as _;
-        const GRAPHICS = ffi::RpsNodeDeclFlagBits_RPS_NODE_DECL_GRAPHICS_BIT as _;
-        const COMPUTE = ffi::RpsNodeDeclFlagBits_RPS_NODE_DECL_COMPUTE_BIT as _;
-        const COPY = ffi::RpsNodeDeclFlagBits_RPS_NODE_DECL_COPY_BIT as _;
-        const PREFER_RENDER_PASS = ffi::RpsNodeDeclFlagBits_RPS_NODE_DECL_PREFER_RENDER_PASS as _;
-        const PREFER_ASYNC = ffi::RpsNodeDeclFlagBits_RPS_NODE_DECL_PREFER_ASYNC as _;
+        const NONE = sys::RpsNodeDeclFlagBits_RPS_NODE_DECL_FLAG_NONE as _;
+        const GRAPHICS = sys::RpsNodeDeclFlagBits_RPS_NODE_DECL_GRAPHICS_BIT as _;
+        const COMPUTE = sys::RpsNodeDeclFlagBits_RPS_NODE_DECL_COMPUTE_BIT as _;
+        const COPY = sys::RpsNodeDeclFlagBits_RPS_NODE_DECL_COPY_BIT as _;
+        const PREFER_RENDER_PASS = sys::RpsNodeDeclFlagBits_RPS_NODE_DECL_PREFER_RENDER_PASS as _;
+        const PREFER_ASYNC = sys::RpsNodeDeclFlagBits_RPS_NODE_DECL_PREFER_ASYNC as _;
     }
 }
 
@@ -102,10 +102,10 @@ bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct ParameterFlags: u32 {
-        const NONE = ffi::RpsParameterFlagBits_RPS_PARAMETER_FLAG_NONE as _;
-        const OUT = ffi::RpsParameterFlagBits_RPS_PARAMETER_FLAG_OUT_BIT as _;
-        const OPTIONAL = ffi::RpsParameterFlagBits_RPS_PARAMETER_FLAG_OPTIONAL_BIT as _;
-        const RESOURCE = ffi::RpsParameterFlagBits_RPS_PARAMETER_FLAG_RESOURCE_BIT as _;
+        const NONE = sys::RpsParameterFlagBits_RPS_PARAMETER_FLAG_NONE as _;
+        const OUT = sys::RpsParameterFlagBits_RPS_PARAMETER_FLAG_OUT_BIT as _;
+        const OPTIONAL = sys::RpsParameterFlagBits_RPS_PARAMETER_FLAG_OPTIONAL_BIT as _;
+        const RESOURCE = sys::RpsParameterFlagBits_RPS_PARAMETER_FLAG_RESOURCE_BIT as _;
     }
 }
 
@@ -113,11 +113,11 @@ bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct CmdCallbackFlags: u32 {
-        const NONE = ffi::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_FLAG_NONE as _;
-        const CUSTOM_RENDER_TARGETS = ffi::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_CUSTOM_RENDER_TARGETS_BIT as _;
-        const CUSTOM_VIEWPORT_SCISSOR = ffi::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_CUSTOM_VIEWPORT_SCISSOR_BIT as _;
-        const CUSTOM_STATE_SETUP = ffi::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_CUSTOM_STATE_SETUP_BIT as _;
-        const CUSTOM_ALL = ffi::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_CUSTOM_ALL as _;
+        const NONE = sys::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_FLAG_NONE as _;
+        const CUSTOM_RENDER_TARGETS = sys::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_CUSTOM_RENDER_TARGETS_BIT as _;
+        const CUSTOM_VIEWPORT_SCISSOR = sys::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_CUSTOM_VIEWPORT_SCISSOR_BIT as _;
+        const CUSTOM_STATE_SETUP = sys::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_CUSTOM_STATE_SETUP_BIT as _;
+        const CUSTOM_ALL = sys::RpsCmdCallbackFlagBits_RPS_CMD_CALLBACK_CUSTOM_ALL as _;
     }
 }
 
@@ -138,7 +138,7 @@ impl Default for CmdCallback {
     }
 }
 
-assert_size_and_align!(CmdCallback, ffi::RpsCmdCallback);
+assert_size_and_align!(CmdCallback, sys::RpsCmdCallback);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -157,7 +157,7 @@ impl Default for ParameterDesc {
     }
 }
 
-assert_size_and_align!(ParameterDesc, ffi::RpsParameterDesc);
+assert_size_and_align!(ParameterDesc, sys::RpsParameterDesc);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -175,7 +175,7 @@ impl Default for NodeDesc {
     }
 }
 
-assert_size_and_align!(NodeDesc, ffi::RpsNodeDesc);
+assert_size_and_align!(NodeDesc, sys::RpsNodeDesc);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -195,19 +195,19 @@ impl Default for RenderGraphSignatureDesc {
     }
 }
 
-assert_size_and_align!(RenderGraphSignatureDesc, ffi::RpsRenderGraphSignatureDesc);
+assert_size_and_align!(RenderGraphSignatureDesc, sys::RpsRenderGraphSignatureDesc);
 
 #[inline]
 pub unsafe fn cmd_callback_report_error(context: *const CmdCallbackContext, error_code: Result) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsCmdCallbackReportError(context.cast(), mem::transmute(error_code)))
+    result_from_ffi(sys::rpsCmdCallbackReportError(context.cast(), mem::transmute(error_code)))
 }
 
 bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct NodeFlags: u32 {
-        const NONE = ffi::RpsNodeFlagBits_RPS_NODE_FLAG_NONE as _;
-        const PREFER_ASYNC = ffi::RpsNodeFlagBits_RPS_NODE_PREFER_ASYNC as _;
+        const NONE = sys::RpsNodeFlagBits_RPS_NODE_FLAG_NONE as _;
+        const PREFER_ASYNC = sys::RpsNodeFlagBits_RPS_NODE_PREFER_ASYNC as _;
     }
 }
 
@@ -234,7 +234,7 @@ impl Default for RenderGraphUpdateInfo {
     }
 }
 
-assert_size_and_align!(RenderGraphUpdateInfo, ffi::RpsRenderGraphUpdateInfo);
+assert_size_and_align!(RenderGraphUpdateInfo, sys::RpsRenderGraphUpdateInfo);
 
 pub const MAX_QUEUED_FRAMES: usize = 16;
 pub const GPU_COMPLETED_FRAME_INDEX_NONE: u64 = u64::MAX;
@@ -250,7 +250,7 @@ pub struct RenderGraphPhaseInfo {
     pub pfn_destroy: PfnRenderGraphPhaseDestroy
 }
 
-assert_size_and_align!(RenderGraphPhaseInfo, ffi::RpsRenderGraphPhaseInfo);
+assert_size_and_align!(RenderGraphPhaseInfo, sys::RpsRenderGraphPhaseInfo);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
@@ -259,7 +259,7 @@ pub struct MemoryTypeInfo {
     pub min_alignment: u32
 }
 
-assert_size_and_align!(MemoryTypeInfo, ffi::RpsMemoryTypeInfo);
+assert_size_and_align!(MemoryTypeInfo, sys::RpsMemoryTypeInfo);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
@@ -269,7 +269,7 @@ pub struct GpuMemoryRequirement {
     pub memory_type_index: Index32
 }
 
-assert_size_and_align!(GpuMemoryRequirement, ffi::RpsGpuMemoryRequirement);
+assert_size_and_align!(GpuMemoryRequirement, sys::RpsGpuMemoryRequirement);
 
 pub type HeapId = Index32;
 
@@ -280,7 +280,7 @@ pub struct HeapPlacement {
     pub offset: u64
 }
 
-assert_size_and_align!(HeapPlacement, ffi::RpsHeapPlacement);
+assert_size_and_align!(HeapPlacement, sys::RpsHeapPlacement);
 
 #[repr(C)]
 #[derive(Clone, Copy, Default)]
@@ -293,16 +293,16 @@ pub struct RuntimeResourceInfo {
     pub alloc_info: GpuMemoryRequirement
 }
 
-assert_size_and_align!(RuntimeResourceInfo, ffi::RpsRuntimeResourceInfo);
+assert_size_and_align!(RuntimeResourceInfo, sys::RpsRuntimeResourceInfo);
 
 bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct QueueFlags: u32 {
-        const NONE = ffi::RpsQueueFlagBits_RPS_QUEUE_FLAG_NONE as _;
-        const GRAPHICS = ffi::RpsQueueFlagBits_RPS_QUEUE_FLAG_GRAPHICS as _;
-        const COMPUTE = ffi::RpsQueueFlagBits_RPS_QUEUE_FLAG_COMPUTE as _;
-        const COPY = ffi::RpsQueueFlagBits_RPS_QUEUE_FLAG_COPY as _;
+        const NONE = sys::RpsQueueFlagBits_RPS_QUEUE_FLAG_NONE as _;
+        const GRAPHICS = sys::RpsQueueFlagBits_RPS_QUEUE_FLAG_GRAPHICS as _;
+        const COMPUTE = sys::RpsQueueFlagBits_RPS_QUEUE_FLAG_COMPUTE as _;
+        const COPY = sys::RpsQueueFlagBits_RPS_QUEUE_FLAG_COPY as _;
     }
 }
 
@@ -320,7 +320,7 @@ impl Default for RuntimeDeviceCreateInfo {
     }
 }
 
-assert_size_and_align!(RuntimeDeviceCreateInfo, ffi::RpsRuntimeDeviceCreateInfo);
+assert_size_and_align!(RuntimeDeviceCreateInfo, sys::RpsRuntimeDeviceCreateInfo);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -336,12 +336,12 @@ impl Default for NullRuntimeDeviceCreateInfo {
     }
 }
 
-assert_size_and_align!(NullRuntimeDeviceCreateInfo, ffi::RpsNullRuntimeDeviceCreateInfo);
+assert_size_and_align!(NullRuntimeDeviceCreateInfo, sys::RpsNullRuntimeDeviceCreateInfo);
 
 #[inline]
 pub unsafe fn null_runtime_device_create(create_info: *const DeviceCreateInfo) -> RpsResult<Device> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsNullRuntimeDeviceCreate(create_info.cast(), &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsNullRuntimeDeviceCreate(create_info.cast(), &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
@@ -360,35 +360,35 @@ impl Default for ProgramCreateInfo {
     }
 }
 
-assert_size_and_align!(ProgramCreateInfo, ffi::RpsProgramCreateInfo);
+assert_size_and_align!(ProgramCreateInfo, sys::RpsProgramCreateInfo);
 
 #[inline]
 pub unsafe fn rpsl_entry_get_signature_desc(rpsl_entry: RpslEntry) -> RpsResult<RenderGraphSignatureDesc> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsRpslEntryGetSignatureDesc(rpsl_entry.into_raw().cast(), &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsRpslEntryGetSignatureDesc(rpsl_entry.into_raw().cast(), &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
 #[inline]
 pub unsafe fn program_create(device: Device, create_info: *const ProgramCreateInfo) -> RpsResult<Subprogram> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsProgramCreate(device.into_raw().cast(), create_info.cast(), &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsProgramCreate(device.into_raw().cast(), create_info.cast(), &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
 #[inline]
 pub unsafe fn program_destroy(program: Subprogram) {
-    ffi::rpsProgramDestroy(program.into_raw().cast());
+    sys::rpsProgramDestroy(program.into_raw().cast());
 }
 
 #[inline]
 pub unsafe fn program_bind_node_callback(program: Subprogram, name: *const c_char, callback: *const CmdCallback) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsProgramBindNodeCallback(program.into_raw().cast(), name, callback.cast()))
+    result_from_ffi(sys::rpsProgramBindNodeCallback(program.into_raw().cast(), name, callback.cast()))
 }
 
 #[inline]
 pub unsafe fn program_bind_node_subprogram(program: Subprogram, name: *const c_char, subprogram: Subprogram) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsProgramBindNodeSubprogram(program.into_raw().cast(), name, subprogram.into_raw().cast()))
+    result_from_ffi(sys::rpsProgramBindNodeSubprogram(program.into_raw().cast(), name, subprogram.into_raw().cast()))
 }
 
 #[repr(C)]
@@ -438,53 +438,53 @@ impl Default for RenderGraphCreateInfo {
     }
 }
 
-assert_size_and_align!(RenderGraphCreateInfo, ffi::RpsRenderGraphCreateInfo);
+assert_size_and_align!(RenderGraphCreateInfo, sys::RpsRenderGraphCreateInfo);
 
 #[inline]
 pub unsafe fn render_graph_create(device: Device, create_info: *const RenderGraphCreateInfo) -> RpsResult<RenderGraph> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsRenderGraphCreate(device.into_raw().cast(), create_info.cast(), &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsRenderGraphCreate(device.into_raw().cast(), create_info.cast(), &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
 #[inline]
 pub unsafe fn render_graph_update(render_graph: RenderGraph, update_info: *const RenderGraphUpdateInfo) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsRenderGraphUpdate(render_graph.into_raw().cast(), update_info.cast()))
+    result_from_ffi(sys::rpsRenderGraphUpdate(render_graph.into_raw().cast(), update_info.cast()))
 }
 
 #[inline]
 pub unsafe fn render_graph_destroy(render_graph: RenderGraph) {
-    ffi::rpsRenderGraphDestroy(render_graph.into_raw().cast());
+    sys::rpsRenderGraphDestroy(render_graph.into_raw().cast());
 }
 
 #[inline]
 pub unsafe fn render_graph_allocate_data(render_graph_builder: RenderGraphBuilder, size: usize) -> *const c_void {
-    ffi::rpsRenderGraphAllocateData(render_graph_builder.into_raw().cast(), size)
+    sys::rpsRenderGraphAllocateData(render_graph_builder.into_raw().cast(), size)
 }
 
 #[inline]
 pub unsafe fn render_graph_allocate_data_aligned(render_graph_builder: RenderGraphBuilder, size: usize, alignment: usize) -> *const c_void {
-    ffi::rpsRenderGraphAllocateDataAligned(render_graph_builder.into_raw().cast(), size, alignment)
+    sys::rpsRenderGraphAllocateDataAligned(render_graph_builder.into_raw().cast(), size, alignment)
 }
 
 #[inline]
 pub unsafe fn render_graph_declare_dynamic_node(render_graph_builder: RenderGraphBuilder, node_desc: *const NodeDesc) -> NodeDeclId {
-    ffi::rpsRenderGraphDeclareDynamicNode(render_graph_builder.into_raw().cast(), node_desc.cast())
+    sys::rpsRenderGraphDeclareDynamicNode(render_graph_builder.into_raw().cast(), node_desc.cast())
 }
 
 #[inline]
 pub unsafe fn render_graph_get_param_variable(render_graph_builder: RenderGraphBuilder, param_id: ParamId) -> Variable {
-    ffi::rpsRenderGraphGetParamVariable(render_graph_builder.into_raw().cast(), param_id)
+    sys::rpsRenderGraphGetParamVariable(render_graph_builder.into_raw().cast(), param_id)
 }
 
 #[inline]
 pub unsafe fn render_graph_get_param_resource_id(render_graph_builder: RenderGraphBuilder, param_id: ParamId) -> ResourceId {
-    ffi::rpsRenderGraphGetParamResourceId(render_graph_builder.into_raw().cast(), param_id)
+    sys::rpsRenderGraphGetParamResourceId(render_graph_builder.into_raw().cast(), param_id)
 }
 
 #[inline]
 pub unsafe fn render_graph_declare_resource(render_graph_builder: RenderGraphBuilder, name: *const c_char, local_id: ResourceId, desc: Variable) -> ResourceId {
-    ffi::rpsRenderGraphDeclareResource(render_graph_builder.into_raw().cast(), name, local_id, desc)
+    sys::rpsRenderGraphDeclareResource(render_graph_builder.into_raw().cast(), name, local_id, desc)
 }
 
 #[inline]
@@ -498,7 +498,7 @@ pub unsafe fn render_graph_add_node(
     args: *const Variable,
     num_args: u32
 ) -> NodeId {
-    ffi::rpsRenderGraphAddNode(
+    sys::rpsRenderGraphAddNode(
         render_graph_builder.into_raw().cast(),
         node_decl_id,
         user_tag,
@@ -513,7 +513,7 @@ pub unsafe fn render_graph_add_node(
 #[inline]
 pub unsafe fn render_graph_get_resource_info(render_graph_builder: RenderGraphBuilder, resource_id: ResourceId, temporal_layer_index: u32) -> RpsResult<RuntimeResourceInfo> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsRenderGraphGetResourceInfo(
+    result_from_ffi(sys::rpsRenderGraphGetResourceInfo(
         render_graph_builder.into_raw().cast(),
         resource_id,
         temporal_layer_index,
@@ -530,7 +530,7 @@ pub unsafe fn render_graph_get_output_parameter_resource_infos(
     num_resources: u32,
     resource_infos: *mut RuntimeResourceInfo
 ) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsRenderGraphGetOutputParameterResourceInfos(
+    result_from_ffi(sys::rpsRenderGraphGetOutputParameterResourceInfos(
         render_graph_builder.into_raw().cast(),
         param_id,
         array_offset,
@@ -541,7 +541,7 @@ pub unsafe fn render_graph_get_output_parameter_resource_infos(
 
 #[inline]
 pub unsafe fn render_graph_get_main_entry(render_graph: RenderGraph) -> Subprogram {
-    Subprogram(ffi::rpsRenderGraphGetMainEntry(render_graph.into_raw().cast()).cast())
+    Subprogram(sys::rpsRenderGraphGetMainEntry(render_graph.into_raw().cast()).cast())
 }
 
 #[repr(C)]
@@ -555,7 +555,7 @@ pub struct CommandBatch {
     pub num_cmds: u32
 }
 
-assert_size_and_align!(CommandBatch, ffi::RpsCommandBatch);
+assert_size_and_align!(CommandBatch, sys::RpsCommandBatch);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -573,14 +573,14 @@ impl Default for RenderGraphBatchLayout {
     }
 }
 
-assert_size_and_align!(RenderGraphBatchLayout, ffi::RpsRenderGraphBatchLayout);
+assert_size_and_align!(RenderGraphBatchLayout, sys::RpsRenderGraphBatchLayout);
 
 bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct RecordCommandFlags: u32 {
-        const NONE = ffi::RpsRecordCommandFlagBits_RPS_RECORD_COMMAND_FLAG_NONE as _;
-        const ENABLE_COMMAND_DEBUG_MARKERS = ffi::RpsRecordCommandFlagBits_RPS_RECORD_COMMAND_FLAG_ENABLE_COMMAND_DEBUG_MARKERS as _;
+        const NONE = sys::RpsRecordCommandFlagBits_RPS_RECORD_COMMAND_FLAG_NONE as _;
+        const ENABLE_COMMAND_DEBUG_MARKERS = sys::RpsRecordCommandFlagBits_RPS_RECORD_COMMAND_FLAG_ENABLE_COMMAND_DEBUG_MARKERS as _;
     }
 }
 
@@ -602,18 +602,18 @@ impl Default for RenderGraphRecordCommandInfo {
     }
 }
 
-assert_size_and_align!(RenderGraphRecordCommandInfo, ffi::RpsRenderGraphRecordCommandInfo);
+assert_size_and_align!(RenderGraphRecordCommandInfo, sys::RpsRenderGraphRecordCommandInfo);
 
 #[inline]
 pub unsafe fn render_graph_get_batch_layout(render_graph: RenderGraph) -> RpsResult<RenderGraphBatchLayout> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsRenderGraphGetBatchLayout(render_graph.into_raw().cast(), &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsRenderGraphGetBatchLayout(render_graph.into_raw().cast(), &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
 #[inline]
 pub unsafe fn render_graph_record_commands(render_graph: RenderGraph, record_info: *const RenderGraphRecordCommandInfo) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsRenderGraphRecordCommands(render_graph.into_raw().cast(), record_info.cast()))
+    result_from_ffi(sys::rpsRenderGraphRecordCommands(render_graph.into_raw().cast(), record_info.cast()))
 }
 
 pub const CMD_ID_INVALID: u32 = INDEX_NONE_U32;
@@ -655,7 +655,7 @@ pub struct CmdDiagnosticInfo {
     pub transition: CmdDiagnosticInfoTransition
 }
 
-assert_size_and_align!(CmdDiagnosticInfo, ffi::RpsCmdDiagnosticInfo);
+assert_size_and_align!(CmdDiagnosticInfo, sys::RpsCmdDiagnosticInfo);
 
 #[repr(C)]
 #[derive(Clone, Copy)]
@@ -681,7 +681,7 @@ impl Default for ResourceDiagnosticInfo {
     }
 }
 
-assert_size_and_align!(ResourceDiagnosticInfo, ffi::RpsResourceDiagnosticInfo);
+assert_size_and_align!(ResourceDiagnosticInfo, sys::RpsResourceDiagnosticInfo);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
@@ -694,7 +694,7 @@ pub struct HeapDiagnosticInfo {
     pub runtime_heap: RuntimeHeap
 }
 
-assert_size_and_align!(HeapDiagnosticInfo, ffi::RpsHeapDiagnosticInfo);
+assert_size_and_align!(HeapDiagnosticInfo, sys::RpsHeapDiagnosticInfo);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -718,15 +718,15 @@ bitflags! {
     #[repr(transparent)]
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
     pub struct RenderGraphDiagnosticInfoFlags: u32 {
-        const DEFAULT = ffi::RpsRenderGraphDiagnosticInfoFlagBits_RPS_RENDER_GRAPH_DIAGNOSTIC_INFO_DEFAULT as _;
-        const USE_CACHED_BIT = ffi::RpsRenderGraphDiagnosticInfoFlagBits_RPS_RENDER_GRAPH_DIAGNOSTIC_INFO_USE_CACHED_BIT as _;
+        const DEFAULT = sys::RpsRenderGraphDiagnosticInfoFlagBits_RPS_RENDER_GRAPH_DIAGNOSTIC_INFO_DEFAULT as _;
+        const USE_CACHED_BIT = sys::RpsRenderGraphDiagnosticInfoFlagBits_RPS_RENDER_GRAPH_DIAGNOSTIC_INFO_USE_CACHED_BIT as _;
     }
 }
 
 #[inline]
 pub unsafe fn render_graph_get_diagnostics_info(render_graph: RenderGraph, diagnostic_flags: RenderGraphDiagnosticInfoFlags) -> RpsResult<RenderGraphDiagnosticInfo> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsRenderGraphGetDiagnosticInfo(
+    result_from_ffi(sys::rpsRenderGraphGetDiagnosticInfo(
         render_graph.into_raw().cast(),
         &mut result as *mut _ as *mut _,
         mem::transmute(diagnostic_flags)
@@ -752,7 +752,7 @@ impl Default for CmdCallbackContext {
     }
 }
 
-assert_size_and_align!(CmdCallbackContext, ffi::RpsCmdCallbackContext);
+assert_size_and_align!(CmdCallbackContext, sys::RpsCmdCallbackContext);
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
@@ -763,19 +763,19 @@ pub struct ResourceAccessInfo {
     pub view_format: Format
 }
 
-assert_size_and_align!(ResourceAccessInfo, ffi::RpsResourceAccessInfo);
+assert_size_and_align!(ResourceAccessInfo, sys::RpsResourceAccessInfo);
 
 #[inline]
 pub unsafe fn cmd_get_render_targets_info(context: *const CmdCallbackContext) -> RpsResult<CmdRenderTargetInfo> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsCmdGetRenderTargetsInfo(context.cast(), &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsCmdGetRenderTargetsInfo(context.cast(), &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
 #[inline]
 pub unsafe fn cmd_get_viewport_info(context: *const CmdCallbackContext) -> RpsResult<CmdViewportInfo> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsCmdGetViewportInfo(context.cast(), &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsCmdGetViewportInfo(context.cast(), &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
@@ -788,7 +788,7 @@ pub struct CmdRenderPassBeginInfo {
 #[inline]
 pub unsafe fn cmd_clone_context(context: *const CmdCallbackContext, cmd_buffer_for_derived_context: RuntimeCommandBuffer) -> RpsResult<*const CmdCallbackContext> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsCmdCloneContext(
+    result_from_ffi(sys::rpsCmdCloneContext(
         context.cast(),
         mem::transmute(cmd_buffer_for_derived_context),
         &mut result as *mut _ as *mut _
@@ -798,28 +798,28 @@ pub unsafe fn cmd_clone_context(context: *const CmdCallbackContext, cmd_buffer_f
 
 #[inline]
 pub unsafe fn cmd_begin_render_pass(context: *const CmdCallbackContext, begin_info: *const CmdRenderPassBeginInfo) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsCmdBeginRenderPass(context.cast(), begin_info.cast()))
+    result_from_ffi(sys::rpsCmdBeginRenderPass(context.cast(), begin_info.cast()))
 }
 
 #[inline]
 pub unsafe fn cmd_end_render_pass(context: *const CmdCallbackContext) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsCmdEndRenderPass(context.cast()))
+    result_from_ffi(sys::rpsCmdEndRenderPass(context.cast()))
 }
 
 #[inline]
 pub unsafe fn cmd_set_command_buffer(context: *const CmdCallbackContext, cmd_buffer: RuntimeCommandBuffer) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsCmdSetCommandBuffer(context.cast(), mem::transmute(cmd_buffer)))
+    result_from_ffi(sys::rpsCmdSetCommandBuffer(context.cast(), mem::transmute(cmd_buffer)))
 }
 
 #[inline]
 pub unsafe fn cmd_get_node_name(context: *const CmdCallbackContext, node_names: *mut *const c_char, node_name_length: *mut usize) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsCmdGetNodeName(context.cast(), node_names, node_name_length))
+    result_from_ffi(sys::rpsCmdGetNodeName(context.cast(), node_names, node_name_length))
 }
 
 #[inline]
 pub unsafe fn cmd_get_param_desc(context: *const CmdCallbackContext, param_id: ParamId) -> RpsResult<ParameterDesc> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsCmdGetParamDesc(context.cast(), param_id, &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsCmdGetParamDesc(context.cast(), param_id, &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
@@ -831,13 +831,13 @@ pub unsafe fn cmd_get_arg_resource_desc_array(
     resource_descs: *mut ResourceDesc,
     num_descs: u32
 ) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsCmdGetArgResourceDescArray(context.cast(), arg_index, src_array_offset, resource_descs.cast(), num_descs))
+    result_from_ffi(sys::rpsCmdGetArgResourceDescArray(context.cast(), arg_index, src_array_offset, resource_descs.cast(), num_descs))
 }
 
 #[inline]
 pub unsafe fn cmd_get_arg_resource_desc(context: *const CmdCallbackContext, arg_index: ParamId) -> RpsResult<ResourceDesc> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsCmdGetArgResourceDesc(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsCmdGetArgResourceDesc(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
@@ -849,7 +849,7 @@ pub unsafe fn cmd_get_arg_resource_access_info_array(
     resource_access_infos: *mut ResourceAccessInfo,
     num_accessess: u32
 ) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsCmdGetArgResourceAccessInfoArray(
+    result_from_ffi(sys::rpsCmdGetArgResourceAccessInfoArray(
         context.cast(),
         arg_index,
         src_array_offset,
@@ -861,7 +861,7 @@ pub unsafe fn cmd_get_arg_resource_access_info_array(
 #[inline]
 pub unsafe fn cmd_get_arg_resource_access_info(context: *const CmdCallbackContext, arg_index: ParamId) -> RpsResult<ResourceAccessInfo> {
     let mut result = MaybeUninit::uninit();
-    result_from_ffi(ffi::rpsCmdGetArgResourceAccessInfo(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
+    result_from_ffi(sys::rpsCmdGetArgResourceAccessInfo(context.cast(), arg_index, &mut result as *mut _ as *mut _))?;
     Ok(result.assume_init())
 }
 
@@ -890,9 +890,9 @@ impl Default for RenderGraphExecuteInfo {
     }
 }
 
-assert_size_and_align!(RenderGraphExecuteInfo, ffi::RpsRenderGraphExecuteInfo);
+assert_size_and_align!(RenderGraphExecuteInfo, sys::RpsRenderGraphExecuteInfo);
 
 #[inline]
 pub unsafe fn render_graph_execute(render_graph: RenderGraph, execute_info: *const RenderGraphExecuteInfo) -> RpsResult<()> {
-    result_from_ffi(ffi::rpsRenderGraphExecute(render_graph.into_raw().cast(), execute_info.cast()))
+    result_from_ffi(sys::rpsRenderGraphExecute(render_graph.into_raw().cast(), execute_info.cast()))
 }
