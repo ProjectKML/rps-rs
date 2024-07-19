@@ -24,7 +24,7 @@ define_handle!(RuntimeResource);
 define_handle!(RuntimeCommandBuffer);
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct ParamAttr {
     pub access: AccessAttr,
     pub semantic: SemanticAttr
