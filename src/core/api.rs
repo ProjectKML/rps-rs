@@ -178,7 +178,10 @@ impl TypeInfo {
 
     #[inline]
     pub fn init_from_size_and_type_id(size: usize, type_id: TypeId) -> Self {
-        Self { size: size as _, id: type_id as _ }
+        Self {
+            size: size as _,
+            id: type_id.0 as _
+        }
     }
 
     #[inline]
@@ -194,9 +197,9 @@ impl TypeInfo {
 
 #[repr(transparent)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
-pub struct BuiltInTypeIds(u32);
+pub struct TypeId(u32);
 
-impl BuiltInTypeIds {
+impl TypeId {
     pub const BOOL: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_BOOL as _);
     pub const INT8: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_INT8 as _);
     pub const UINT8: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_UINT8 as _);
@@ -211,9 +214,17 @@ impl BuiltInTypeIds {
     pub const MAX_VALUE: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_BUILT_IN_MAX_VALUE as _);
     pub const RUNTIME_DEFINED_BEGIN: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_RUNTIME_DEFINED_BEGIN as _);
     pub const USER_DEFINED_BEGIN: Self = Self(sys::RpsBuiltInTypeIds_RPS_TYPE_USER_DEFINED_BEGIN as _);
-}
 
-pub type TypeId = i32;
+    #[inline]
+    pub unsafe fn from_raw(raw: u32) -> Self {
+        Self(raw)
+    }
+
+    #[inline]
+    pub fn as_raw(self) -> u32 {
+        self.0
+    }
+}
 
 pub type NodeDeclId = u32;
 pub type ParamId = u32;
