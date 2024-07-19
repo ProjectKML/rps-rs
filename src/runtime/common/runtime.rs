@@ -211,7 +211,7 @@ bitflags! {
     }
 }
 
-pub type PfnRenderGraphBuild = Option<unsafe extern "C" fn(builder: RenderGraphBuilder, args: *const Constant, num_args: u32)>;
+pub type PfnRenderGraphBuild = Option<unsafe extern "C" fn(builder: RenderGraphBuilder, args: *const Constant, num_args: u32) -> Result>;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
