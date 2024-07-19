@@ -14,7 +14,7 @@ static_assertions = "1.1.0"
 
 [features]
 default = ["vulkan"]
-d3d11 = ["render-pipeline-shaders-sys/d3d11"]
-d3d12 = ["render-pipeline-shaders-sys/d3d12"]
-vulkan = ["render-pipeline-shaders-sys/vulkan"]
+d3d11 = ["rps-sys/d3d11"]
+d3d12 = ["rps-sys/d3d12"]
+vulkan = ["rps-sys/vulkan"]
 

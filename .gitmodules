@@ -1,9 +1,9 @@
-[submodule "render-pipeline-shaders-sys/vendor/Vulkan-Docs"]
-	path = render-pipeline-shaders-sys/vendor/Vulkan-Docs
+[submodule "rps-sys/vendor/Vulkan-Docs"]
+	path = rps-sys/vendor/Vulkan-Docs
 	url = https://github.com/KhronosGroup/Vulkan-Docs
-[submodule "render-pipeline-shaders-sys/vendor/Vulkan-Headers"]
-	path = render-pipeline-shaders-sys/vendor/Vulkan-Headers
+[submodule "rps-sys/vendor/Vulkan-Headers"]
+	path = rps-sys/vendor/Vulkan-Headers
 	url = https://github.com/KhronosGroup/Vulkan-Headers/
-[submodule "render-pipeline-shaders-sys/vendor/RenderPipelineShaders"]
-	path = render-pipeline-shaders-sys/vendor/RenderPipelineShaders
+[submodule "rps-sys/vendor/RenderPipelineShaders"]
+	path = rps-sys/vendor/RenderPipelineShaders
 	url = https://github.com/projectkml/RenderPipelineShaders
