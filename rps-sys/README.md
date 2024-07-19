@@ -3,7 +3,7 @@
 
 <div align="center">
 
-# `🎬 render-pipeline-shaders-rs`
+# `🎬 rps-sys`
 
 **A very lightweight wrapper around the Render Pipeline Shaders library 🦀**
 
@@ -21,9 +21,9 @@
 [vma-badge]: https://img.shields.io/badge/Render%20Pipeline%20Shaders-1.0%20Beta-orange
 [vma-url]: https://github.com/GPUOpen-LibrariesAndSDKs/RenderPipelineShaders
 
-[dependency-badge]: https://deps.rs/repo/github/projectkml/render-pipeline-shaders-rs/status.svg
-[dependency-url]: https://deps.rs/repo/github/projectkml/render-pipeline-shaders-rs
+[dependency-badge]: https://deps.rs/repo/github/projectkml/rps-sys/status.svg
+[dependency-url]: https://deps.rs/repo/github/projectkml/rps-sys
 
 </div>
 
-This is the `render-pipeline-shaders-sys` crate. Its very likely that you want to use the `render-pipeline-shaders` crate instead.
+This is the `rps-sys` crate. Its very likely that you want to use the `rps` crate instead.

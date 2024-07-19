@@ -1,23 +1,23 @@
 <div align="center">
 
-# `🎬 render-pipeline-shaders-rs`
+# `🎬 rps-rs`
 
 **A very lightweight wrapper around the Render Pipeline Shaders library 🦀**
 
 [projectkml-badge]: https://img.shields.io/badge/projectkml-open%20source-blueviolet.svg
 [projectkml-url]: https://github.com/ProjectKML
 
-[crates-badge]: https://img.shields.io/crates/v/render-pipeline-shaders-rs.svg
-[crates-url]: https://crates.io/crates/render-pipeline-shaders-rs
+[crates-badge]: https://img.shields.io/crates/v/rps-rs.svg
+[crates-url]: https://crates.io/crates/rps-rs
 
-[docs-badge]: https://docs.rs/render-pipeline-shaders-rs/badge.svg
-[docs-url]: https://docs.rs/render-pipeline-shaders-rs
+[docs-badge]: https://docs.rs/rps-rs/badge.svg
+[docs-url]: https://docs.rs/rps-rs
 
-[dependency-badge]: https://deps.rs/repo/github/ProjectKML/render-pipeline-shaders-rs/status.svg
-[dependency-url]: https://deps.rs/repo/github/ProjectKML/render-pipeline-shaders-rs
+[dependency-badge]: https://deps.rs/repo/github/ProjectKML/rps-rs/status.svg
+[dependency-url]: https://deps.rs/repo/github/ProjectKML/rps-rs
 
-[build-badge]: https://github.com/ProjectKML/render-pipeline-shaders-rs/workflows/CI/badge.svg
-[build-url]: https://github.com/ProjectKML/render-pipeline-shaders-rs/actions
+[build-badge]: https://github.com/ProjectKML/rps-rs/workflows/CI/badge.svg
+[build-url]: https://github.com/ProjectKML/rps-rs/actions
 
 [![ProjectKML][projectkml-badge]][projectkml-url]
 [![Crates.io][crates-badge]][crates-url]
