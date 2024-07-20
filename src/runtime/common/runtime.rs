@@ -468,6 +468,13 @@ pub unsafe fn render_graph_allocate_data_aligned(render_graph_builder: RenderGra
 }
 
 #[inline]
+pub unsafe fn render_graph_allocate_data_for_type<T>(render_graph_builder: RenderGraphBuilder) -> *mut T {
+    render_graph_allocate_data_aligned(render_graph_builder, mem::size_of::<T>(), mem::align_of::<T>())
+        .cast_mut()
+        .cast()
+}
+
+#[inline]
 pub unsafe fn render_graph_declare_dynamic_node(render_graph_builder: RenderGraphBuilder, node_desc: *const NodeDesc) -> NodeDeclId {
     sys::rpsRenderGraphDeclareDynamicNode(render_graph_builder.into_raw().cast(), node_desc.cast())
 }

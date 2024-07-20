@@ -218,12 +218,12 @@ impl TypeId {
     pub const BUFFER_VIEW: Self = Self(sys::RpsRuntimeBuiltInTypeIds_RPS_TYPE_BUFFER_VIEW as _);
 
     #[inline]
-    pub unsafe fn from_raw(raw: u32) -> Self {
+    pub fn from_raw(raw: u32) -> Self {
         Self(raw)
     }
 
     #[inline]
-    pub fn as_raw(self) -> u32 {
+    pub fn into_raw(self) -> u32 {
         self.0
     }
 }
