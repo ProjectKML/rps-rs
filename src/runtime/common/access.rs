@@ -36,7 +36,7 @@ bitflags! {
         const STENCIL_DISCARD_DATA_BEFORE = sys::RpsAccessFlagBits_RPS_ACCESS_STENCIL_DISCARD_DATA_BEFORE_BIT as _;
         const STENCIL_DISCARD_DATA_AFTER = sys::RpsAccessFlagBits_RPS_ACCESS_STENCIL_DISCARD_DATA_AFTER_BIT as _;
         const BEFORE = sys::RpsAccessFlagBits_RPS_ACCESS_BEFORE_BIT as _;
-        const AFTER = sys::RpsAccessFlagBits_RPS_ACCESS_DEPTH as _;
+        const AFTER = sys::RpsAccessFlagBits_RPS_ACCESS_AFTER_BIT as _;
         const CLEAR = sys::RpsAccessFlagBits_RPS_ACCESS_CLEAR_BIT as _;
         const RENDER_PASS = sys::RpsAccessFlagBits_RPS_ACCESS_RENDER_PASS as _;
         const RELAXED_ORDER = sys::RpsAccessFlagBits_RPS_ACCESS_RELAXED_ORDER_BIT as _;
